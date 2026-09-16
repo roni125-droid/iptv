@@ -26,6 +26,59 @@ Ko vejo združite v `main`, je naslov krajši:
 V VLC: `Medij → Odpri omrežni tok` in prilepite zgornji naslov. Lokalno
 datoteko odprete z `Medij → Odpri datoteko`.
 
+## Namestitev na Android TV box
+
+Na vsakem od boxov ponovite iste korake. Isti naslov lahko uporabljajo vse tri
+naprave hkrati, saj gre za navadne javne pretoke brez naročnine in brez
+omejitve števila naprav.
+
+**TiViMate** (priporočeno, ker si zapomni vrstni red kanalov):
+1. `Settings → Playlists → Add playlist → Enter URL`.
+2. Prilepite zgornji naslov in potrdite.
+3. Če kateri kanal ne steče, v `Settings → Playlists → <ime> → User agent`
+   nastavite brskalniški User-Agent.
+
+**IPTV Smarters ali OTT Navigator**: izberite vpis prek naslova M3U
+(`Load Your Playlist → M3U URL`), EPG pustite prazen.
+
+**VLC za Android**: `Nova mreža → Vnesite naslov`.
+
+### Kaj na Android TV najpogosteje ponagaja
+
+| Težava | Kaj se zgodi | Rešitev |
+| --- | --- | --- |
+| Nešifriran HTTP | Android 9 in novejši ga privzeto blokira | v predvajalniku vklopite dovoljenje za `cleartext`, sicer ta kanal preskočite |
+| Neveljavno TLS potrdilo | ExoPlayer povezavo zavrne brez sporočila | kanal odprite v VLC, ki je manj strog |
+| Privzeti User-Agent | strežnik vrne napako 403 | nastavite brskalniški User-Agent |
+| H.265/HEVC | zvok teče, slike ni | na starejšem boxu izberite drug kanal |
+
+Katera od teh težav velja za vaše omrežje, pove diagnostika:
+
+```bash
+python3 tools/check.py ex-yu.m3u --android --devices 3
+```
+
+Skripto poženite na računalniku v istem domačem omrežju kot boxi. Zastavica
+`--devices 3` odpre tri hkratne povezave do vsakega pretoka in tako preveri
+prav vaš primer s tremi napravami naenkrat.
+
+## Zasebnost seznama
+
+Ta repozitorij je **javen**, zato je seznam viden vsakomur, ki pozna naslov.
+V njem ni ničesar, kar bi bilo mogoče zlorabiti: ni naročnine, gesla, ključa
+niti omejitve naprav, sami naslovi pa so že javno objavljeni v bazi iptv-org.
+Deljenje torej ničesar ne porabi in vam ne more ugasniti dostopa.
+
+Če seznam kljub temu ne sme biti javen, imate dve možnosti:
+
+- **Repozitorij nastavite na zaseben** (`Settings → General → Danger Zone →
+  Change visibility`). Takrat zgornji naslov na boxih neha delovati, zato
+  datoteko `ex-yu.m3u` prenesite na vsak box prek USB ključka ali domače mreže
+  in jo v predvajalniku odprite kot lokalno datoteko. Ob osvežitvah morate
+  kopijo ponoviti.
+- **Pustite javno in ne delite naslova.** Samodejno osveževanje in vsi trije
+  boxi delujejo brez posega.
+
 ## Kaj je vključeno in kaj ne
 
 Vključeni so samo programi, ki jih izdajatelj (ali njegov uradni CDN) oddaja
@@ -48,9 +101,10 @@ IPTV povezave same po sebi niso trajne. Da seznam ostane uporaben tudi čez
 več mesecev, ga vzdržujeta dve skripti in en GitHub Actions posel:
 
 ```bash
-python3 tools/build.py --out .                       # znova zgradi seznam
-python3 tools/check.py ex-yu.m3u si.m3u hr.m3u ba.m3u rs.m3u   # samo poročilo
-python3 tools/check.py ex-yu.m3u --prune             # odstrani mrtve povezave
+python3 tools/build.py --out .                        # znova zgradi seznam
+python3 tools/check.py ex-yu.m3u                      # samo poročilo
+python3 tools/check.py ex-yu.m3u --android --devices 3  # diagnostika za bokse
+python3 tools/check.py ex-yu.m3u --prune              # odstrani mrtve povezave
 ```
 
 `tools/build.py` vsakič znova prebere javno bazo
