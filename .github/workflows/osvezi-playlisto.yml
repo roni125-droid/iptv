@@ -1,0 +1,39 @@
+name: Osvezi playlisto
+
+# Enkrat tedensko na novo zgradi seznam iz baze iptv-org, preveri vsako
+# povezavo in odstrani mrtve. Tako lista ostane uporabna tudi cez vec mesecev.
+on:
+  schedule:
+    - cron: "17 4 * * 1"   # vsak ponedeljek ob 04:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  osvezi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zgradi seznam iz baze iptv-org
+        run: python3 tools/build.py --out .
+
+      - name: Preveri povezave in odstrani mrtve
+        run: python3 tools/check.py ex-yu.m3u si.m3u hr.m3u ba.m3u rs.m3u --prune --timeout 20
+
+      - name: Objavi spremembe
+        run: |
+          if [ -z "$(git status --porcelain -- '*.m3u')" ]; then
+            echo "Ni sprememb."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.m3u'
+          git commit -m "Samodejno osvezena playlista ($(date -u +%Y-%m-%d))"
+          git push
