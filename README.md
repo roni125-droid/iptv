@@ -46,15 +46,25 @@ omejitve števila naprav.
 
 **VLC za Android:** `Nova mreža → Vnesite naslov`.
 
-### Oznake v imenih kanalov
+### Skupine in oznake
 
-| Oznaka | Pomen |
+Seznam je razdeljen na dve vrsti skupin. Najprej so skupine z imenom države,
+v katerih so programi, ki oddajajo ves dan. Za njimi so skupine z dodatkom
+`- obcasni`, kjer so postaje, ki oddajajo le del dneva ali so geografsko
+zaklenjene.
+
+| Skupina | Kanalov |
 | --- | --- |
-| `[ni 24/7]` | postaja ne oddaja ves dan, zunaj programa je napaka pričakovana |
-| `[geo]` | pretok je omejen na domačo državo in od drugod ne bo stekel |
+| Slovenija | 3 stalnih, 2 občasna |
+| Hrvaška | 8 stalnih, 6 občasnih |
+| Bosna in Hercegovina | 7 stalnih, 4 občasni |
+| Srbija | 15 stalnih, 7 občasnih |
 
-Takih kanalov je v seznamu več kot polovica pri lokalnih postajah. Napaka ob
-odprtju torej ne pomeni nujno, da je povezava mrtva.
+V imenih kanalov sta poleg tega oznaki `[ni 24/7]` in `[geo]`.
+
+Pri občasnih postajah je napaka ob odprtju pričakovana in ne pomeni mrtve
+povezave. Lokalne televizije pogosto oddajajo šele popoldne in zvečer, zato
+isti kanal poskusite ob drugi uri dneva, preden ga odpišete.
 
 ### Če seznam preizkušate na računalniku
 

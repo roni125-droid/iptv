@@ -246,31 +246,42 @@ def build(cache: str | None, outdir: str) -> dict:
     for country in per_country:
         per_country[country].sort(key=lambda e: e["name"].lower())
 
+    def render(entry: dict, group: str) -> list[str]:
+        name = entry["name"]
+        if entry["note"]:
+            name += f' [{entry["note"]}]'
+        return [
+            f'#EXTINF:-1 tvg-id="{entry["id"]}" tvg-logo="{entry["logo"]}" '
+            f'group-title="{group}",{name}',
+            entry["url"],
+        ]
+
     os.makedirs(outdir, exist_ok=True)
     total = 0
-    combined = ["#EXTM3U"]
+
+    # Stalni programi gredo v svojo skupino pred obcasne. V TiViMate se
+    # skupine berejo po vrsti, zato so zgoraj tisti, ki vedno delajo, spodaj
+    # pa postaje, ki oddajajo le del dneva ali so geografsko zaklenjene.
+    always = ["#EXTM3U"]
+    sometimes: list[str] = []
     for code, label in COUNTRIES.items():
         rows = per_country[code]
         total += len(rows)
         single = ["#EXTM3U"]
         for entry in rows:
-            label_name = entry["name"]
-            if entry["note"]:
-                label_name += f' [{entry["note"]}]'
-            for sink, group in ((combined, label), (single, label)):
-                sink.append(
-                    f'#EXTINF:-1 tvg-id="{entry["id"]}" tvg-logo="{entry["logo"]}" '
-                    f'group-title="{group}",{label_name}'
-                )
-                sink.append(entry["url"])
+            group = label if not entry["note"] else f"{label} - obcasni"
+            single += render(entry, group)
+            (sometimes if entry["note"] else always).extend(render(entry, group))
         with open(os.path.join(outdir, f"{code}.m3u"), "w", encoding="utf-8") as fh:
             fh.write("\n".join(single) + "\n")
     with open(os.path.join(outdir, "ex-yu.m3u"), "w", encoding="utf-8") as fh:
-        fh.write("\n".join(combined) + "\n")
+        fh.write("\n".join(always + sometimes) + "\n")
 
     print(f"zapisano: {total} kanalov v {outdir}")
     for code, label in COUNTRIES.items():
-        print(f"  {label:<24} {len(per_country[code]):>3}")
+        rows = per_country[code]
+        stalni = sum(1 for e in rows if not e["note"])
+        print(f"  {label:<24} {len(rows):>3}  od tega stalnih {stalni}")
     return per_country
 
 
