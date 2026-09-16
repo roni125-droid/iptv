@@ -20,8 +20,9 @@ neposredno povezavo do surove datoteke:
 https://raw.githubusercontent.com/roni125-droid/iptv/claude/playlist-ex-yu-iptv-m2u6ya/ex-yu.m3u
 ```
 
-Ko vejo združite v `main`, je naslov krajši:
-`https://raw.githubusercontent.com/roni125-droid/iptv/main/ex-yu.m3u`
+Ta naslov deluje samo, dokler je repozitorij javen. Ko ga zaprete po korakih
+v razdelku [Zaščita repozitorija](#zaščita-repozitorija), sezname na bokse
+prenesete lokalno.
 
 V VLC: `Medij → Odpri omrežni tok` in prilepite zgornji naslov. Lokalno
 datoteko odprete z `Medij → Odpri datoteko`.
@@ -62,22 +63,55 @@ Skripto poženite na računalniku v istem domačem omrežju kot boxi. Zastavica
 `--devices 3` odpre tri hkratne povezave do vsakega pretoka in tako preveri
 prav vaš primer s tremi napravami naenkrat.
 
-## Zasebnost seznama
+## Zaščita repozitorija
 
-Ta repozitorij je **javen**, zato je seznam viden vsakomur, ki pozna naslov.
-V njem ni ničesar, kar bi bilo mogoče zlorabiti: ni naročnine, gesla, ključa
-niti omejitve naprav, sami naslovi pa so že javno objavljeni v bazi iptv-org.
-Deljenje torej ničesar ne porabi in vam ne more ugasniti dostopa.
+Repozitorij je ob nastanku **javen**, kar pomeni, da je seznam viden vsakomur.
+Spodnji koraki ga zaprejo. Nastavitev vidnosti lahko spremeni samo lastnik
+računa, zato jih morate opraviti ročno.
 
-Če seznam kljub temu ne sme biti javen, imate dve možnosti:
+### 1. Repozitorij nastavite na zasebnega
 
-- **Repozitorij nastavite na zaseben** (`Settings → General → Danger Zone →
-  Change visibility`). Takrat zgornji naslov na boxih neha delovati, zato
-  datoteko `ex-yu.m3u` prenesite na vsak box prek USB ključka ali domače mreže
-  in jo v predvajalniku odprite kot lokalno datoteko. Ob osvežitvah morate
-  kopijo ponoviti.
-- **Pustite javno in ne delite naslova.** Samodejno osveževanje in vsi trije
-  boxi delujejo brez posega.
+1. Odprite `https://github.com/roni125-droid/iptv/settings`.
+2. Čisto na dnu, v razdelku **Danger Zone**, kliknite `Change visibility`.
+3. Izberite `Make private`, vpišite ime repozitorija in potrdite.
+
+Takoj zatem javni naslov `raw.githubusercontent.com` neha delovati za vse, tudi
+za vaše bokse. Kako jih ohranite pri življenju, piše v točki 3.
+
+### 2. Zaprite še ostale poti
+
+V istih nastavitvah pod **Features** izklopite `Issues`, `Wikis` in `Projects`,
+ki jih ta repozitorij ne potrebuje. Pod **Pull Requests** odstranite kljukico
+pri `Allow forking`, da seznama ni mogoče kopirati z enim klikom.
+
+Samodejno tedensko osveževanje po tem še vedno deluje, saj GitHub Actions teče
+tudi na zasebnih repozitorijih.
+
+### 3. Sezname prenesite na bokse lokalno
+
+Ker javnega naslova ni več, gre seznam na bokse prek USB ključka:
+
+```bash
+python3 tools/build.py --out .        # osveži seznam
+./tools/za-bokse.sh /media/usb        # pripravi datoteke za prenos
+```
+
+Na boksu nato v predvajalniku izberite lokalno datoteko namesto naslova URL.
+V TiViMate je to `Settings → Playlists → Add playlist → Open file`. Ob vsaki
+osvežitvi postopek ponovite, v praksi zadošča enkrat na mesec ali dva.
+
+### Česa noben od teh korakov ne naredi
+
+Datoteke, ki jo predvajalnik lahko odpre, ni mogoče zakleniti. Kdor ima naslov
+ali kopijo, ima seznam, in nobena nastavitev v GitHubu tega ne spremeni.
+Zasebnost torej pomeni nadzor nad tem, komu naslov pride v roke, ne pa tehnične
+ključavnice.
+
+Vredno je vedeti tudi, da v seznamu ni ničesar izključnega. Naslovi pretokov so
+že javno objavljeni v bazi iptv-org, programi pa se oddajajo brezplačno. Ni
+naročnine, gesla in ne omejitve naprav, zato z morebitnim deljenjem ne izgubite
+dostopa in se vam nič ne porabi. Vaše je le izbiranje in orodje okrog njega,
+kar je zapisano v [NOTICE.md](NOTICE.md).
 
 ## Kaj je vključeno in kaj ne
 
@@ -113,9 +147,9 @@ nove in spremenjene naslove. `tools/check.py` vsako povezavo dejansko odpre in
 zahteva veljaven HLS/DASH odgovor.
 
 Delovni proces `.github/workflows/osvezi-playlisto.yml` oboje zažene vsak
-ponedeljek in spremembe sam objavi. Časovnik v GitHubu teče samo na privzeti
-veji, zato vejo s tem seznamom nastavite za privzeto ali posel poženite ročno
-prek gumba *Run workflow*.
+ponedeljek in spremembe sam objavi. Veja `claude/playlist-ex-yu-iptv-m2u6ya` je
+že nastavljena kot privzeta, zato časovnik teče brez dodatnega posega. Predčasno
+ga zaženete z gumbom *Run workflow* v zavihku *Actions*.
 
 ## Viri podatkov
 
