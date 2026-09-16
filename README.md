@@ -78,18 +78,30 @@ računa, zato jih morate opraviti ročno.
 Takoj zatem javni naslov `raw.githubusercontent.com` neha delovati za vse, tudi
 za vaše bokse. Kako jih ohranite pri življenju, piše v točki 3.
 
-### 2. Zaprite še ostale poti
+### 2. Pospravite še nepotrebne funkcije
 
-V istih nastavitvah pod **Features** izklopite `Issues`, `Wikis` in `Projects`,
-ki jih ta repozitorij ne potrebuje. Pod **Pull Requests** odstranite kljukico
-pri `Allow forking`, da seznama ni mogoče kopirati z enim klikom.
+V razdelku **Features**, ki je na isti strani nekoliko višje, tik nad
+razdelkom Pull Requests, izklopite `Issues`, `Wikis` in `Projects`. Ta
+repozitorij jih ne potrebuje.
+
+Možnosti `Allow forking` na zasebnem repozitoriju ni. GitHub jo skrije, ker
+zasebnega repozitorija v osebnem računu nihče od zunaj ne more forkati. Če je
+ne najdete, je to znak, da je repozitorij res zaprt.
 
 Samodejno tedensko osveževanje po tem še vedno deluje, saj GitHub Actions teče
 tudi na zasebnih repozitorijih.
 
 ### 3. Sezname prenesite na bokse lokalno
 
-Ker javnega naslova ni več, gre seznam na bokse prek USB ključka:
+Javnega naslova ni več, zato gre seznam na bokse prek USB ključka.
+
+**Prek brskalnika, brez orodij:**
+
+1. Odprite `https://github.com/roni125-droid/iptv` in kliknite `ex-yu.m3u`.
+2. Desno zgoraj kliknite `Download raw file` in datoteko shranite na USB ključek.
+3. Ključek priklopite na box.
+
+**Če imate repozitorij kloniran in nameščen Python:**
 
 ```bash
 python3 tools/build.py --out .        # osveži seznam
