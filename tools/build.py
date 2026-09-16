@@ -17,6 +17,7 @@ import io
 import os
 import re
 import sys
+import urllib.parse
 import urllib.request
 from collections import OrderedDict
 
@@ -51,6 +52,7 @@ HOST_DENYLIST = (
     "united.cloud",
     "webtvstream.bhtelecom.ba",
     "cutuk.net",
+    "mirtv.club",      # vraca vrinjeno oglasno skripto namesto pretoka
 )
 
 # Poti, znacilne za pirat panele in za prepakiran ISP multicast.
@@ -105,6 +107,22 @@ def is_bare_ip(host: str) -> bool:
     return bool(re.fullmatch(r"\d{1,3}(\.\d{1,3}){3}", host))
 
 
+def own_server(title: str, url: str) -> bool:
+    """Ali pot v naslovu nosi ime same postaje?
+
+    Mala postaja pogosto oddaja s svojega streznika brez domene. Ce se ime
+    kanala pojavi v poti, gre skoraj zagotovo za njen lasten streznik in ne
+    za preprodajalca, ki na isti naslov obesi tuje programe.
+    """
+    path = re.sub(r"[^a-z0-9]", "", urllib.parse.urlparse(url).path.lower())
+    if not path:
+        return False
+    name = clean_name(title).lower()
+    tokens = [t for t in re.split(r"[^a-z0-9]+", name) if len(t) >= 4]
+    tokens.append(re.sub(r"[^a-z0-9]", "", name))
+    return any(t and t in path for t in tokens)
+
+
 def parse_entries(text: str):
     """Vrni (tvg_id, prikazno_ime, url, ima_user_agent) za vsak zapis."""
     lines = text.splitlines()
@@ -126,14 +144,15 @@ def parse_entries(text: str):
         i += 1
 
 
-def keep(tvg_id: str, title: str, url: str, ua: bool) -> bool:
+def keep(tvg_id: str, title: str, url: str, ua: bool,
+         ip_channels: int = 99) -> bool:
     if not url.lower().startswith(("http://", "https://")):
         return False          # mmsh:// in rtsp:// sodobni predvajalniki ne marajo
     if ua:
         return False          # ponarejen User-Agent = obhod zascite vira
     host = host_of(url)
-    if is_bare_ip(host):
-        return False          # gol IP brez domene je skoraj vedno re-stream
+    if is_bare_ip(host) and not (ip_channels == 1 and own_server(title, url)):
+        return False          # gol IP z vec programi je preprodajalski panel
     if any(bad in host for bad in HOST_DENYLIST):
         return False
     if PATH_DENY_RE.search(url):
@@ -167,6 +186,7 @@ def clean_name(title: str) -> str:
 
 
 def flags(title: str) -> str:
+    """Oznake, ki jih je nujno videti v imenu kanala na zaslonu."""
     out = []
     if "[Geo-blocked]" in title:
         out.append("geo")
@@ -181,16 +201,29 @@ def build(cache: str | None, outdir: str) -> dict:
     for row in read_csv("logos.csv", cache):
         logos.setdefault(row["channel"], row["url"])
 
-    best: dict[str, tuple] = {}
+    # Najprej preberi vse vire in prestej kanale na posameznem golem IP-ju.
+    sources: dict[str, str] = {}
+    ip_count: dict[str, set] = {}
     for src in SOURCE_FILES:
         try:
-            text = read_source(src, cache)
+            sources[src] = read_source(src, cache)
         except Exception as exc:  # pragma: no cover
             print(f"opozorilo: {src} ni na voljo ({exc})", file=sys.stderr)
             continue
+        for tvg_id, title, url, _ in parse_entries(sources[src]):
+            host = host_of(url)
+            if is_bare_ip(host):
+                ip_count.setdefault(host, set()).add(tvg_id or title)
+
+    best: dict[str, tuple] = {}
+    for src in SOURCE_FILES:
+        text = sources.get(src)
+        if text is None:
+            continue
         for tvg_id, title, url, ua in parse_entries(text):
             country = country_of(tvg_id, src)
-            if country is None or not keep(tvg_id, title, url, ua):
+            n = len(ip_count.get(host_of(url), {None}))
+            if country is None or not keep(tvg_id, title, url, ua, n):
                 continue
             key = tvg_id or f"{country}:{clean_name(title).lower()}"
             cand = (quality_rank(title, url), country, tvg_id, title, url)
@@ -221,10 +254,13 @@ def build(cache: str | None, outdir: str) -> dict:
         total += len(rows)
         single = ["#EXTM3U"]
         for entry in rows:
+            label_name = entry["name"]
+            if entry["note"]:
+                label_name += f' [{entry["note"]}]'
             for sink, group in ((combined, label), (single, label)):
                 sink.append(
                     f'#EXTINF:-1 tvg-id="{entry["id"]}" tvg-logo="{entry["logo"]}" '
-                    f'group-title="{group}",{entry["name"]}'
+                    f'group-title="{group}",{label_name}'
                 )
                 sink.append(entry["url"])
         with open(os.path.join(outdir, f"{code}.m3u"), "w", encoding="utf-8") as fh:

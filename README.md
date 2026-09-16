@@ -33,16 +33,35 @@ Na vsakem od boxov ponovite iste korake. Isti naslov lahko uporabljajo vse tri
 naprave hkrati, saj gre za navadne javne pretoke brez naročnine in brez
 omejitve števila naprav.
 
-**TiViMate** (priporočeno, ker si zapomni vrstni red kanalov):
-1. `Settings → Playlists → Add playlist → Enter URL`.
-2. Prilepite zgornji naslov in potrdite.
-3. Če kateri kanal ne steče, v `Settings → Playlists → <ime> → User agent`
-   nastavite brskalniški User-Agent.
+**IPTV Extreme:**
 
-**IPTV Smarters ali OTT Navigator**: izberite vpis prek naslova M3U
-(`Load Your Playlist → M3U URL`), EPG pustite prazen.
+1. V stranskem meniju izberite dodajanje seznama in vpišite naslov ali
+   izberite lokalno datoteko `ex-yu.m3u`.
+2. Če kateri kanal vrne napako 403, v nastavitvah poiščite `User Agent` in
+   vpišite brskalniškega. Strežnik takrat misli, da gleda navaden računalnik.
+3. Če se kanal ne odpre, v nastavitvah predvajalnika zamenjajte dekoder.
+   IPTV Extreme jih ima več in vsak prenese nekoliko drugačne pretoke.
 
-**VLC za Android**: `Nova mreža → Vnesite naslov`.
+**TiViMate:** `Settings → Playlists → Add playlist`, nato naslov ali datoteka.
+
+**VLC za Android:** `Nova mreža → Vnesite naslov`.
+
+### Oznake v imenih kanalov
+
+| Oznaka | Pomen |
+| --- | --- |
+| `[ni 24/7]` | postaja ne oddaja ves dan, zunaj programa je napaka pričakovana |
+| `[geo]` | pretok je omejen na domačo državo in od drugod ne bo stekel |
+
+Takih kanalov je v seznamu več kot polovica pri lokalnih postajah. Napaka ob
+odprtju torej ne pomeni nujno, da je povezava mrtva.
+
+### Če seznam preizkušate na računalniku
+
+Protivirusni programi radi blokirajo strežnike, na katerih tečejo majhne
+postaje, ker jih ne poznajo. ESET v takem primeru javi `Naslov je blokiran` in
+pokaže naslov IP, predvajalnik pa samo reče, da vira ne more odpreti. To je
+blokada na vašem računalniku in ne stanje pretoka. Na boksu iste blokade ni.
 
 ### Kaj na Android TV najpogosteje ponagaja
 
@@ -125,16 +144,39 @@ naročnine, gesla in ne omejitve naprav, zato z morebitnim deljenjem ne izgubite
 dostopa in se vam nič ne porabi. Vaše je le izbiranje in orodje okrog njega,
 kar je zapisano v [NOTICE.md](NOTICE.md).
 
+## Filmi in serije
+
+V seznamu je en pravi filmski program, hrvaški **Klasik**, ki vrti starejše
+filme. Brezplačnih živih kanalov s filmi in domačimi nadaljevankami v regiji
+tako rekoč ni, ker so te pravice plačljive in jih imajo CineStar, Pickbox,
+Pink Film in podobni.
+
+Zakonita in brezplačna pot do domačih filmov in nadaljevank so lastne
+platforme javnih televizij. Te niso seznami M3U, ampak aplikacije oziroma
+spletne strani, ki jih na boks namestite posebej:
+
+| Platforma | Država | Kaj ponuja |
+| --- | --- | --- |
+| RTS Planeta | Srbija | velik arhiv domačih serij in filmov, brezplačna registracija |
+| HRTi | Hrvaška | hrvaške serije in filmi, del vsebine le znotraj Hrvaške |
+| RTV SLO 365 | Slovenija | slovenske nadaljevanke in filmi |
+| BHRT in FTV | BiH | oddaje in del arhiva prek spletnega predvajalnika |
+
+Javne televizije imajo tudi uradne kanale na YouTubu, kjer so cele
+nadaljevanke in filmi objavljeni zakonito.
+
 ## Kaj je vključeno in kaj ne
 
 Vključeni so samo programi, ki jih izdajatelj (ali njegov uradni CDN) oddaja
 javno in brez naročnine. Samodejno so izločeni:
 
-- naslovi na golih IP naslovih brez domene,
+- goli naslovi IP, na katerih visi več tujih programov hkrati, kar je znak
+  preprodajalskega panela, medtem ko lasten strežnik male postaje ostane,
 - zapisi, ki zahtevajo ponarejen `User-Agent`,
 - znani preprodajalski panelji in prepakiran operaterski multicast (`/play/`, `/udp/`),
 - puščeni dostopni ključi in testni računi operaterjev,
-- plačljivi in tuji programi (HBO, Arena Sport, Nat Geo, Viasat in podobno).
+- plačljivi in tuji programi, na primer HBO, Arena Sport, Nat Geo in Viasat,
+- strežniki, ki namesto pretoka vrnejo vrinjeno oglasno skripto.
 
 Zato v seznamu **ni** programov kot RTV SLO, HRT, RTS ali Nova TV. Njihovi
 prosto dostopni pretoki so geografsko zaklenjeni oziroma na voljo le prek
