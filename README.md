@@ -17,8 +17,11 @@ V predvajalnik (VLC, Kodi, IPTV Smarters, Tivimate, TV aplikacije) prilepite
 neposredno povezavo do surove datoteke:
 
 ```
-https://raw.githubusercontent.com/roni125-droid/iptv/main/ex-yu.m3u
+https://raw.githubusercontent.com/roni125-droid/iptv/claude/playlist-ex-yu-iptv-m2u6ya/ex-yu.m3u
 ```
+
+Ko vejo združite v `main`, je naslov krajši:
+`https://raw.githubusercontent.com/roni125-droid/iptv/main/ex-yu.m3u`
 
 V VLC: `Medij → Odpri omrežni tok` in prilepite zgornji naslov. Lokalno
 datoteko odprete z `Medij → Odpri datoteko`.
