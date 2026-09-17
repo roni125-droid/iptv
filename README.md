@@ -86,11 +86,21 @@ slike. Predvajalnik namenoma začne pri najslabši, da slika stece takoj, nato
 izmeri hitrost povezave in šele čez kakih deset sekund preklopi na najboljšo.
 To čakanje vidite kot meglo.
 
-Odpravite ga tako, da kanale vnaprej pripnete na najboljšo različico:
+Odpravite ga tako, da kanale vnaprej pripnete na najboljšo različico.
+
+Na Windows brez ukazne vrstice: datoteke `exyu.m3u`, `tools/kakovost.py` in
+`tools/naredi-hd.bat` dajte v isto mapo in dvokliknite `naredi-hd.bat`. Sam
+poišče Python in naredi `exyu-hd.m3u`. Enako dela `preveri.bat`, ki požene
+preverjanje kanalov.
+
+Ročno:
 
 ```bash
 python3 tools/kakovost.py exyu.m3u --out exyu-hd.m3u
 ```
+
+Pozor, te ukaze vpišete v ukazni poziv, ne v okno Pythona. Če vidite `>>>`,
+ste v Pythonu in ukazi tam ne delujejo.
 
 Skripta odpre vsak glavni manifest, poišče različico z najvišjo ločljivostjo
 in naslov zamenja z njo. Predvajalnik potem nima česa izbirati in začne takoj
