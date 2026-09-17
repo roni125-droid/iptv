@@ -74,9 +74,14 @@ Najnižje v seznamu so TV Pirot pri 240p ter Kanal 6 in TNT Kids pri 288p.
 
 ## Popravljanje seznama
 
-`tools/popravi.py` v enem prehodu odstrani kanale, ki jih strežnik dokončno
-zavrača, kanalom s pokvarjenim potrdilom preklopi naslov na HTTP in vse skupaj
-pripne na najboljšo sliko:
+`tools/popravi.py` v enem prehodu popravi, kar se popraviti da:
+
+- kanale, ki jih strežnik dokončno zavrača z 404 ali 403, odstrani,
+- kadar se potrdilo glasi na drugo ime, prebere pravo ime iz potrdila in
+  naslov popravi nanj, nato pa povezavo preveri v celoti,
+- kadar je potrdilo poteklo, poskusi isto sliko prek HTTP, tudi na običajnih
+  vratih Wowza 1935 in 8086,
+- kanale z več različicami pripne na najboljšo sliko.
 
 ```bash
 python3 tools/popravi.py ex-yu.m3u --out ex-yu-ok.m3u

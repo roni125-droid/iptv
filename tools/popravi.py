@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import re
+import socket
 import ssl
 import sys
 import urllib.error
@@ -150,8 +151,56 @@ def http_candidates(url: str) -> list[str]:
     return out
 
 
+def cert_hostname(url: str, timeout: float) -> str | None:
+    """Ime, na katero se glasi potrdilo streznika.
+
+    Kadar postaja oddaja s svojega naslova IP, je potrdilo veljavno, le
+    glasi se na domeno. Preverjanje verige zato opravimo, preverjanje imena
+    pa zacasno izpustimo, samo da iz potrdila preberemo pravo ime. Nato se
+    povezemo nanj s polnim preverjanjem.
+    """
+    parts = urllib.parse.urlsplit(url)
+    host, port = parts.hostname, parts.port or 443
+    if not host:
+        return None
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False          # ime preverimo sami, veriga ostane
+    try:
+        with socket.create_connection((host, port), timeout) as raw:
+            with ctx.wrap_socket(raw, server_hostname=host) as tls:
+                cert = tls.getpeercert() or {}
+    except Exception:
+        return None
+    names = [v for k, v in cert.get("subjectAltName", ()) if k == "DNS"]
+    for entry in cert.get("subject", ()):
+        for k, v in entry:
+            if k == "commonName" and v not in names:
+                names.append(v)
+    for name in names:
+        if name and not name.startswith("*") and name != host:
+            return name
+    return None
+
+
 def repair(url: str, timeout: float) -> Result:
     body, final, err = fetch(url, timeout)
+
+    if err and err[0] == "tls" and "mismatch" in err[2].lower():
+        # Potrdilo je veljavno, le glasi se na drugo ime. Poskusimo nanj.
+        name = cert_hostname(url, timeout)
+        if name:
+            parts = urllib.parse.urlsplit(url)
+            netloc = f"{name}:{parts.port}" if parts.port else name
+            fixed = urllib.parse.urlunsplit(
+                ("https", netloc, parts.path, parts.query, "")
+            )
+            body2, final2, err2 = fetch(fixed, timeout)
+            if err2 is None:
+                note = f"naslov popravljen na pravo ime streznika, {name}"
+                new, extra = best_variant(body2, final2 or fixed)
+                return Result(
+                    KEEP, new or fixed, f"{note}; {extra}" if extra else note
+                )
 
     if err and err[0] == "tls":
         # Potrdilo je pokvarjeno. Ista slika je pogosto na voljo prek HTTP.
@@ -200,7 +249,7 @@ def main() -> int:
             continue
         out.extend([block, r.url])
         kept += 1
-        if "HTTP" in r.note and "preklopljeno" in r.note:
+        if "preklopljeno" in r.note or "popravljen" in r.note:
             fixed += 1
             print(f"  POPRAVLJEN  {name:<34} {r.note}")
         elif "pripeto" in r.note:
@@ -214,7 +263,7 @@ def main() -> int:
 
     print()
     print(f"  odstranjenih (404 ali 403) : {len(dropped)}")
-    print(f"  popravljenih prek HTTP     : {fixed}")
+    print(f"  popravljenih naslovov      : {fixed}")
     print(f"  pripetih na boljso sliko   : {pinned}")
     print(f"  kanalov v novem seznamu    : {kept}")
     print(f"  -> zapisano v {args.out}")
