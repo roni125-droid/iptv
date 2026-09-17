@@ -23,7 +23,11 @@ echo Odpiram tri hkratne povezave do vsakega kanala, kot bi to naredili boksi.
 echo To traja nekaj minut. Datoteke ne spreminjam.
 echo.
 
-%PY% check.py exyu.m3u --android --devices 3
+%PY% check.py exyu.m3u --android --devices 3 > porocilo-preverjanje.txt 2>&1
+type porocilo-preverjanje.txt
+echo.
+echo Izpis je shranjen v porocilo-preverjanje.txt v tej mapi.
+echo To datoteko lahko prilozite v klepet namesto fotografije.
 goto konec
 
 :ni_skripte

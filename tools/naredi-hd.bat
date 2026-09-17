@@ -22,7 +22,11 @@ echo Uporabljam Python: %PY%
 echo Povezujem se na streznike postaj. To traja minuto ali dve.
 echo.
 
-%PY% kakovost.py exyu.m3u --out exyu-hd.m3u
+%PY% kakovost.py exyu.m3u --out exyu-hd.m3u > porocilo-hd.txt 2>&1
+type porocilo-hd.txt
+echo.
+echo Izpis je shranjen v porocilo-hd.txt v tej mapi.
+echo To datoteko lahko prilozite v klepet namesto fotografije.
 
 echo.
 if exist "exyu-hd.m3u" goto uspeh

@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import re
+import ssl
 import sys
 import urllib.error
 import urllib.parse
@@ -70,12 +71,23 @@ def best_variant(url: str, timeout: float) -> tuple[str | None, str]:
             final = resp.geturl()
             body = resp.read(65536).decode("utf-8", "replace")
     except urllib.error.HTTPError as exc:
-        return None, f"HTTP {exc.code}"
+        return None, f"zavrnjeno, HTTP {exc.code}"
+    except urllib.error.URLError as exc:
+        reason = exc.reason
+        if isinstance(reason, ssl.SSLCertVerificationError):
+            return None, "neveljavno TLS potrdilo"
+        if isinstance(reason, ssl.SSLError):
+            return None, f"napaka TLS: {reason.reason or reason}"
+        if isinstance(reason, TimeoutError):
+            return None, "streznik se ne odziva"
+        return None, f"ni povezave: {reason}"
+    except TimeoutError:
+        return None, "streznik se ne odziva"
     except Exception as exc:
-        return None, type(exc).__name__
+        return None, f"{type(exc).__name__}: {exc}"
 
     if "#EXT-X-STREAM-INF" not in body:
-        return None, "ni glavnega manifesta, naslov ze kaze na eno kakovost"
+        return None, "OK|kanal dela, ima eno samo kakovost, spreminjati ni kaj"
 
     lines = body.splitlines()
     best, best_key, count = None, (-1, -1), 0
@@ -97,7 +109,7 @@ def best_variant(url: str, timeout: float) -> tuple[str | None, str]:
             best_key, best = key, urllib.parse.urljoin(final, target)
 
     if best is None:
-        return None, "razlicic ni bilo mogoce prebrati"
+        return None, "OK|kanal dela, razlicic ni bilo mogoce prebrati"
     height, band = best_key
     opis = f"{height}p" if height else f"{band // 1000} kbit/s"
     return best, f"izbrana najboljsa od {count}, {opis}"
@@ -126,21 +138,38 @@ def main() -> int:
                 pool.map(lambda e: best_variant(e[1], args.timeout), entries)
             )
 
-        out, changed = list(header), 0
+        out, changed, ok, bad = list(header), 0, 0, 0
         print(f"\n== {path}")
         for (block, url), (new_url, info) in zip(entries, results):
+            name = name_of(block)
             if new_url and new_url != url:
                 changed += 1
-                print(f"  PRIPETO   {name_of(block):<34} {info}")
+                print(f"  PRIPETO   {name:<34} {info}")
                 out.extend([block, new_url])
+            elif info.startswith("OK|"):
+                ok += 1
+                print(f"  V REDU    {name:<34} {info[3:]}")
+                out.extend([block, url])
             else:
-                print(f"  brez      {name_of(block):<34} {info}")
+                bad += 1
+                print(f"  NAPAKA    {name:<34} {info}")
                 out.extend([block, url])
 
         target = args.out or path
         with open(target, "w", encoding="utf-8") as fh:
             fh.write("\n".join(out) + "\n")
-        print(f"  -> pripetih {changed} od {len(entries)}, zapisano v {target}")
+        print()
+        print(f"  pripetih na boljso sliko : {changed}")
+        print(f"  ze v redu, brez spremembe: {ok}")
+        print(f"  se ni odzvalo            : {bad}")
+        print(f"  skupaj kanalov           : {len(entries)}")
+        print(f"  -> zapisano v {target}")
+        print()
+        print("  Pozor: NAPAKA tu pomeni samo, da se streznik ta trenutek s")
+        print("  tega racunalnika ni odzval. Kanali z oznako [ni 24/7] so")
+        print("  lahko preprosto zunaj programa, protivirusni program pa zna")
+        print("  blokirati posamezne streznike. Vsi ti kanali ostanejo v")
+        print("  seznamu z izvirnim naslovom in niso izgubljeni.")
 
     return 0
 
