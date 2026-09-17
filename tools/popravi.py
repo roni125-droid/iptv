@@ -151,7 +151,7 @@ def http_candidates(url: str) -> list[str]:
     return out
 
 
-def cert_hostname(url: str, timeout: float) -> str | None:
+def cert_names(url: str, timeout: float) -> tuple[list[str], str]:
     """Ime, na katero se glasi potrdilo streznika.
 
     Kadar postaja oddaja s svojega naslova IP, je potrdilo veljavno, le
@@ -162,34 +162,37 @@ def cert_hostname(url: str, timeout: float) -> str | None:
     parts = urllib.parse.urlsplit(url)
     host, port = parts.hostname, parts.port or 443
     if not host:
-        return None
+        return [], "naslov brez gostitelja"
     ctx = ssl.create_default_context()
     ctx.check_hostname = False          # ime preverimo sami, veriga ostane
     try:
         with socket.create_connection((host, port), timeout) as raw:
             with ctx.wrap_socket(raw, server_hostname=host) as tls:
                 cert = tls.getpeercert() or {}
-    except Exception:
-        return None
+    except Exception as exc:
+        return [], f"potrdila ni bilo mogoce prebrati: {type(exc).__name__}"
     names = [v for k, v in cert.get("subjectAltName", ()) if k == "DNS"]
     for entry in cert.get("subject", ()):
         for k, v in entry:
             if k == "commonName" and v not in names:
                 names.append(v)
-    for name in names:
-        if name and not name.startswith("*") and name != host:
-            return name
-    return None
+    if not names:
+        return [], "potrdilo ne nosi nobenega imena"
+    usable = [n for n in names if n and not n.startswith("*") and n != host]
+    if not usable:
+        return [], "potrdilo nosi samo nadomestna imena: " + ", ".join(names[:3])
+    return usable, ""
 
 
 def repair(url: str, timeout: float) -> Result:
     body, final, err = fetch(url, timeout)
 
+    pojasnilo = ""
     if err and err[0] == "tls" and "mismatch" in err[2].lower():
         # Potrdilo je veljavno, le glasi se na drugo ime. Poskusimo nanj.
-        name = cert_hostname(url, timeout)
-        if name:
-            parts = urllib.parse.urlsplit(url)
+        names, zakaj = cert_names(url, timeout)
+        parts = urllib.parse.urlsplit(url)
+        for name in names[:3]:
             netloc = f"{name}:{parts.port}" if parts.port else name
             fixed = urllib.parse.urlunsplit(
                 ("https", netloc, parts.path, parts.query, "")
@@ -201,6 +204,9 @@ def repair(url: str, timeout: float) -> Result:
                 return Result(
                     KEEP, new or fixed, f"{note}; {extra}" if extra else note
                 )
+            pojasnilo = f"potrdilo se glasi na {name}, a tam pretoka ni"
+        if zakaj:
+            pojasnilo = zakaj
 
     if err and err[0] == "tls":
         # Potrdilo je pokvarjeno. Ista slika je pogosto na voljo prek HTTP.
@@ -212,7 +218,8 @@ def repair(url: str, timeout: float) -> Result:
                 return Result(
                     KEEP, new or plain, f"{note}; {extra}" if extra else note
                 )
-        return Result(KEEP, url, f"ostaja, {err[2]}")
+        konec = f"ostaja, {err[2]}"
+        return Result(KEEP, url, f"{konec}; {pojasnilo}" if pojasnilo else konec)
 
     if err and err[0] == "http" and err[1] in (403, 404, 410):
         return Result(DROP, url, err[2])
@@ -273,4 +280,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except BrokenPipeError:
+        # Izpis je kdo prekinil, na primer z "| more". To ni napaka.
+        sys.exit(0)
