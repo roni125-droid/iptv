@@ -74,14 +74,36 @@ NAME_DENY_RE = re.compile(
 
 TVG_ID_RE = re.compile(r'tvg-id="([^"]*)"')
 
+# Kanali brez oznake [ni 24/7], ki se v treh zaporednih preizkusih niso
+# odzvali, in tak, ki vraca 404. Postaje z oznako [ni 24/7] tu ni, ker je
+# pri njih neodziv pricakovan. Ce katera od teh spet zazivi, vrstico
+# preprosto izbrisite.
+KNOWN_DEAD = {
+    "TrendTV.hr",        # streznik se ne odziva
+    "Kanal6.ba",         # streznik se ne odziva
+    "TNTKidsTV.ba",      # streznik se ne odziva
+    "BelleAmie.rs",      # streznik se ne odziva
+    "TopTV.rs",          # streznik se ne odziva
+    "TVKanalM.rs",       # streznik se ne odziva
+    "PannonTV.rs",       # streznik zavraca, HTTP 404
+}
+
+# Postaje, ki jim je poteklo TLS potrdilo. Vsebina tece, a jo ExoPlayer v
+# TiViMate zavrne, VLC pa vprasa za dovoljenje. Ne sodijo med stalne, dokler
+# postaja potrdila ne obnovi. Takrat vrstico izbrisite.
+KNOWN_CERT_ISSUE = {
+    "Narodna TV.rs",
+    "NarodnaTV.rs",
+    "Pink.rs",
+}
+
 # Rocni popravki naslovov, kjer baza nosi naslov, ki ga sodobni predvajalnik
 # zavrne. Kljuc je naslov iz baze, vrednost pa popravljeni naslov.
-URL_FIXES = {
-    # Klasik oddaja z golega naslova IP, potrdilo Let's Encrypt na tem
-    # strezniku pa se glasi na vod1.laki.eu. To je isti stroj, na katerem
-    # stoji TV Hram. Predvajalniki naslov IP zavrnejo, ime pa sprejmejo.
-    "https://178.253.194.105/klasiktv/playlist.m3u8":
-        "https://vod1.laki.eu/klasiktv/playlist.m3u8",
+URL_FIXES: dict[str, str] = {
+    # Zaenkrat prazno. Poskus, da bi Klasiku zamenjali naslov IP z imenom
+    # vod1.laki.eu iz njegovega potrdila, je propadel. Ime je bilo pravo,
+    # a streznik na njem te poti ne strezhe in vrne 404. Izvirni naslov IP
+    # vsebino strezhe, le potrdilo se glasi na drugo ime.
 }
 
 
@@ -259,6 +281,8 @@ def build(cache: str | None, outdir: str) -> dict:
             n = len(ip_count.get(host_of(url), {None}))
             if country is None or not keep(tvg_id, title, url, ua, n):
                 continue
+            if tvg_id.split("@")[0] in KNOWN_DEAD:
+                continue
             url = URL_FIXES.get(url, url)
             key = tvg_id or f"{country}:{clean_name(title).lower()}"
             cand = (quality_rank(title, url), country, tvg_id, title, url)
@@ -275,8 +299,17 @@ def build(cache: str | None, outdir: str) -> dict:
                 "name": name,
                 "logo": logos.get(tvg_id.split("@")[0], ""),
                 "url": url,
-                "note": flags(title),
-                "part_time": "[Not 24/7]" in title or "[Geo-blocked]" in title,
+                "note": flags(title)
+                + (
+                    (", " if flags(title) else "") + "potrdilo"
+                    if tvg_id.split("@")[0] in KNOWN_CERT_ISSUE
+                    else ""
+                ),
+                "part_time": (
+                    "[Not 24/7]" in title
+                    or "[Geo-blocked]" in title
+                    or tvg_id.split("@")[0] in KNOWN_CERT_ISSUE
+                ),
             }
         )
     for country in per_country:

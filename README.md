@@ -56,9 +56,9 @@ zaklenjene.
 | Skupina | Stalnih | Občasnih |
 | --- | --- | --- |
 | Slovenija | 3 | 2 |
-| Hrvaška | 9 | 6 |
-| Bosna in Hercegovina | 7 | 6 |
-| Srbija | 15 | 8 |
+| Hrvaška | 8 | 6 |
+| Bosna in Hercegovina | 5 | 6 |
+| Srbija | 9 | 10 |
 
 V oglatem oklepaju za imenom kanala so tri vrste podatkov:
 
@@ -67,6 +67,7 @@ V oglatem oklepaju za imenom kanala so tri vrste podatkov:
 | `[720p]` | ločljivost izvora, kot jo oddaja postaja |
 | `[ni 24/7]` | postaja ne oddaja ves dan |
 | `[geo]` | pretok je omejen na domačo državo |
+| `[potrdilo]` | postaji je poteklo TLS potrdilo, TiViMate jo zavrne, VLC vpraša |
 
 Ločljivost je vredno pogledati, preden se čudite mehki sliki. Marsikatera
 lokalna postaja oddaja v 288p ali 480p in to je pri njej normalno, ne okvara.

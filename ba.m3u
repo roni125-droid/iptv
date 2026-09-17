@@ -1,8 +1,6 @@
 #EXTM3U
 #EXTINF:-1 tvg-id="BHRT.ba@SD" tvg-logo="https://i.imgur.com/01bZ5rw.png" group-title="Bosna in Hercegovina - obcasni",BHRT [720p, geo]
 https://bhrtstream.bhtelecom.ba/bhrtportal.m3u8
-#EXTINF:-1 tvg-id="Kanal6.ba@SD" tvg-logo="https://i.imgur.com/GGhvR0l.png" group-title="Bosna in Hercegovina",Kanal 6 [288p]
-https://restreamer1.tnt.ba/hls/kanal6.m3u8
 #EXTINF:-1 tvg-id="MariaPlusVisionMedjugorje.ba@SD" tvg-logo="https://i.imgur.com/xUOspBx.png" group-title="Bosna in Hercegovina",Maria+Vision Medjugorje [720p]
 https://1601580044.rsc.cdn77.org/live/_jcn_/amlst:Italiasette/playlist.m3u8
 #EXTINF:-1 tvg-id="NewsmaxBalkans.ba@SD" tvg-logo="https://i.imgur.com/BXFPz8c.png" group-title="Bosna in Hercegovina",Newsmax Balkans [1080p]
@@ -21,7 +19,5 @@ https://stream.rtvze.ba/live/123/123.m3u8
 https://balkanmedia.dynu.net/hls/tv5web.m3u8
 #EXTINF:-1 tvg-id="TelevizijaM.ba@SD" tvg-logo="https://i.imgur.com/jT95ZEI.png" group-title="Bosna in Hercegovina",Televizija M [1080p]
 https://live.tv-m.net/hls/stream.m3u8
-#EXTINF:-1 tvg-id="TNTKidsTV.ba@SD" tvg-logo="https://i.imgur.com/irTDbpn.png" group-title="Bosna in Hercegovina",TNT Kids TV [288p]
-https://restreamer1.tnt.ba/hls/tntkids.m3u8
 #EXTINF:-1 tvg-id="TVSlonExtra.ba@SD" tvg-logo="https://i.imgur.com/AohYgH1.png" group-title="Bosna in Hercegovina - obcasni",TV Slon Extra [1080p, ni 24/7]
 http://31.47.0.130:8082

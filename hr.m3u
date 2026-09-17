@@ -8,7 +8,7 @@ https://diadoratv.stream/live/diadora/playlist.m3u8
 #EXTINF:-1 tvg-id="KlapeiTambureTV.hr@SD" tvg-logo="https://i.imgur.com/sKj3dgc.png" group-title="Hrvaška",Klape i Tambure TV [1080p]
 https://stream.cmctv.hr:49998/kit/live.m3u8
 #EXTINF:-1 tvg-id="Klasik.hr@SD" tvg-logo="https://i.imgur.com/C90BYlb.png" group-title="Hrvaška - obcasni",Klasik [576p, ni 24/7]
-https://vod1.laki.eu/klasiktv/playlist.m3u8
+https://178.253.194.105/klasiktv/playlist.m3u8
 #EXTINF:-1 tvg-id="LibertasTV.hr@SD" tvg-logo="https://i.imgur.com/4R4fhbd.png" group-title="Hrvaška",Libertas TV [1080p]
 https://stream.luci.xyz/hls/LTV.m3u8
 #EXTINF:-1 tvg-id="OTV.hr@SD" tvg-logo="https://i.imgur.com/67zVdu2.png" group-title="Hrvaška - obcasni",OTV [720p, ni 24/7]
@@ -21,8 +21,6 @@ https://live.leveex.hr/hls/live.m3u8
 https://hls.shift.tv/live/shifttv/playlist.m3u8
 #EXTINF:-1 tvg-id="STV.hr@SD" tvg-logo="https://i.imgur.com/Z3yRl17.png" group-title="Hrvaška",STV [720p]
 http://89.201.163.244:8080/hls/hdmi.m3u8
-#EXTINF:-1 tvg-id="TrendTV.hr@SD" tvg-logo="https://i.imgur.com/4SmNISY.jpg" group-title="Hrvaška",Trend TV [480p]
-http://185.62.75.22:1935/trend/myStream/playlist.m3u8
 #EXTINF:-1 tvg-id="TVJadran.hr@SD" tvg-logo="https://i.imgur.com/UWMHnOG.png" group-title="Hrvaška - obcasni",TV Jadran [720p, ni 24/7]
 https://tvjadran.stream.agatin.hr:3412/live/tvjadranlive.m3u8
 #EXTINF:-1 tvg-id="TVNova.hr@SD" tvg-logo="https://i.imgur.com/gFjJ7YB.png" group-title="Hrvaška",TV Nova [720p]
