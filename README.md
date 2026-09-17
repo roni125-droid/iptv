@@ -76,6 +76,30 @@ Pri občasnih postajah je napaka ob odprtju pričakovana in ne pomeni mrtve
 povezave. Lokalne televizije pogosto oddajajo šele popoldne in zvečer, zato
 isti kanal poskusite ob drugi uri dneva, preden ga odpišete.
 
+### Megleno ob preklopu kanala
+
+Ob preklopu je slika nekaj sekund megleno, nato se sama zbistri. To ni okvara
+in ni odvisno od predvajalnika.
+
+Naslov v seznamu kaže na glavni manifest HLS, v katerem je več različic iste
+slike. Predvajalnik namenoma začne pri najslabši, da slika stece takoj, nato
+izmeri hitrost povezave in šele čez kakih deset sekund preklopi na najboljšo.
+To čakanje vidite kot meglo.
+
+Odpravite ga tako, da kanale vnaprej pripnete na najboljšo različico:
+
+```bash
+python3 tools/kakovost.py exyu.m3u --out exyu-hd.m3u
+```
+
+Skripta odpre vsak glavni manifest, poišče različico z najvišjo ločljivostjo
+in naslov zamenja z njo. Predvajalnik potem nima česa izbirati in začne takoj
+pri najboljši sliki. Zaženite jo doma, ker mora do strežnikov postaj.
+
+Cena tega je, da prilagajanje odpade. Na šibki povezavi predvajalnik ne bo več
+sam znižal kakovosti, ampak bo slika zastajala. V tem primeru se vrnite na
+izvirni seznam, ki ostane nedotaknjen.
+
 ### Če seznam preizkušate na računalniku
 
 Protivirusni programi radi blokirajo strežnike, na katerih tečejo majhne
@@ -213,6 +237,7 @@ python3 tools/build.py --out .                        # znova zgradi seznam
 python3 tools/check.py ex-yu.m3u                      # samo poročilo
 python3 tools/check.py ex-yu.m3u --android --devices 3  # diagnostika za bokse
 python3 tools/check.py ex-yu.m3u --prune              # odstrani mrtve povezave
+python3 tools/kakovost.py ex-yu.m3u --out ex-yu-hd.m3u  # pripni na najboljso sliko
 ```
 
 `tools/build.py` vsakič znova prebere javno bazo
