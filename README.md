@@ -285,8 +285,11 @@ ga zaženete z gumbom *Run workflow* v zavihku *Actions*.
 V mapi [`plugins/LastScannedAnalyzer`](plugins/LastScannedAnalyzer) je
 ločeno orodje, ki s to playlisto nima opravka: plugin za satelitske
 sprejemnike Enigma2. Po skeniranju pokaže, kateri kanali so novi, in jih z
-modrim gumbom prenese v buket, tudi v na novo ustvarjenega. Navodila so v
-[njegovem README](plugins/LastScannedAnalyzer/README.md).
+modrim gumbom prenese v buket, tudi v na novo ustvarjenega.
+
+Navodila po korakih, od prenosa datotek do prve uporabe, so v
+[NAVODILA.md](plugins/LastScannedAnalyzer/NAVODILA.md), tehnični opis pa v
+[README](plugins/LastScannedAnalyzer/README.md) plugina.
 
 ## Viri podatkov
 

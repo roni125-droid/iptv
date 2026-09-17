@@ -8,6 +8,9 @@ Po skeniranju risiver najde na stotine kanalov, v seznamu kanalov pa jih ni
 mogoče ločiti od starih. Ta plugin prebere bazo kanalov (`lamedb`), jo
 primerja z buketi in s stanjem od zadnjič ter novince označi z `[NEW]`.
 
+> Če plugina na Enigmo še niste nameščali, so navodila po korakih, od
+> prenosa datotek do prve uporabe, v [NAVODILA.md](NAVODILA.md).
+
 ## Namestitev
 
 Z računalnika prek SSH:
