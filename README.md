@@ -55,9 +55,9 @@ zaklenjene.
 
 | Skupina | Stalnih | Občasnih |
 | --- | --- | --- |
-| Slovenija | 3 | 2 |
+| Slovenija | 3 | 1 |
 | Hrvaška | 8 | 6 |
-| Bosna in Hercegovina | 5 | 6 |
+| Bosna in Hercegovina | 5 | 5 |
 | Srbija | 9 | 10 |
 
 V oglatem oklepaju za imenom kanala so tri vrste podatkov:

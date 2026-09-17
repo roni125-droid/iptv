@@ -86,6 +86,8 @@ KNOWN_DEAD = {
     "TopTV.rs",          # streznik se ne odziva
     "TVKanalM.rs",       # streznik se ne odziva
     "PannonTV.rs",       # streznik zavraca, HTTP 404
+    "TelevizijaUrslja.si",  # streznik zavraca, HTTP 404 v treh zagonih
+    "RTRSplus.ba",       # streznik zavraca, HTTP 403 v treh zagonih
 }
 
 # Postaje, ki jim je poteklo TLS potrdilo. Vsebina tece, a jo ExoPlayer v
