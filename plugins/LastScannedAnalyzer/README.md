@@ -13,7 +13,19 @@ primerja z buketi in s stanjem od zadnjič ter novince označi z `[NEW]`.
 
 ## Namestitev
 
-Z računalnika prek SSH:
+S paketom, ki ga razume `opkg`:
+
+```bash
+scp enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk root@<naslov>:/tmp/
+ssh root@<naslov> "opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk"
+```
+
+Tako je plugin zaveden med nameščeno programsko opremo in ga odstranite z
+`opkg remove enigma2-plugin-extensions-lastscannedanalyzer`. Paket po
+spremembi kode zgradite znova z `python3 naredi-ipk.py` (potrebuje samo
+Python, `--preveri` ga po gradnji še razpakira in izpiše vsebino).
+
+Brez paketa, s kopiranjem datotek:
 
 ```bash
 scp -r plugins/LastScannedAnalyzer root@<naslov-risiverja>:/tmp/

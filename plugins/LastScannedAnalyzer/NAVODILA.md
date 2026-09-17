@@ -7,9 +7,10 @@ domače, poglavje preprosto preskočite.
 - [Kam se namesti](#kam-se-namesti)
 - [1. korak: datoteke na računalnik](#1-korak-datoteke-na-računalnik)
 - [2. korak: namestitev](#2-korak-namestitev)
-  - [Pot A: z USB ključkom](#pot-a-z-usb-ključkom-brez-računalniških-orodij)
-  - [Pot B: prek omrežja (WinSCP)](#pot-b-prek-omrežja-winscp-windows)
-  - [Pot C: prek omrežja (ukazna vrstica)](#pot-c-prek-omrežja-ukazna-vrstica)
+  - [Pot A: paket .ipk](#pot-a-paket-ipk-priporočeno)
+  - [Pot B: z USB ključkom](#pot-b-z-usb-ključkom-brez-računalniških-orodij)
+  - [Pot C: prek omrežja (WinSCP)](#pot-c-prek-omrežja-winscp-windows)
+  - [Pot D: prek omrežja (ukazna vrstica)](#pot-d-prek-omrežja-ukazna-vrstica)
 - [3. korak: ponovni zagon vmesnika](#3-korak-ponovni-zagon-vmesnika)
 - [4. korak: prva uporaba](#4-korak-prva-uporaba)
 - [Kako plugin dela od znotraj](#kako-plugin-dela-od-znotraj)
@@ -57,6 +58,10 @@ skin.py       update.py    preizkus.py   plugin.png    version.json
 
 ## 1. korak: datoteke na računalnik
 
+Če boste šli po **poti A** (paket `.ipk`), potrebujete eno samo datoteko in
+lahko ta korak preskočite — prenos je opisan tam. Spodnje velja za poti B,
+C in D, ki kopirajo posamezne datoteke.
+
 1. Odprite `https://github.com/roni125-droid/iptv`.
 2. Zeleni gumb **Code** → **Download ZIP**.
 3. ZIP razpakirajte. Znotraj poiščite mapo
@@ -70,11 +75,70 @@ Zapišite si ga, videti je kot `192.168.1.25`.
 
 ## 2. korak: namestitev
 
-Izberite eno od treh poti. Pot A ne potrebuje nobenega programa, pot B je
-najpreprostejša na Windows, pot C je najhitrejša, če vam ukazna vrstica ni
-tuja.
+Izberite eno od štirih poti.
 
-### Pot A: z USB ključkom (brez računalniških orodij)
+| Pot | Kdaj |
+| --- | --- |
+| **A — paket `.ipk`** | privzeta izbira; sprejemnik si plugin zapomni in ga zna sam odstraniti |
+| B — USB ključek | ročno kopiranje, brez računalniških orodij |
+| C — WinSCP | ročno kopiranje z Windows |
+| D — ukazna vrstica | najhitreje, če vam SSH ni tuj |
+
+Poti B, C in D datoteke samo prekopirajo. Delujejo enako dobro, le da
+sprejemnik o njih ne ve ničesar in jih morate pozneje odstraniti ročno.
+
+### Pot A: paket .ipk (priporočeno)
+
+`.ipk` je paket, ki ga razume `opkg`, isti nameščalnik, s katerim
+sprejemnik nameša vse svoje vtičnike.
+
+1. **Prenesite paket.** V repozitoriju odprite
+   `plugins/LastScannedAnalyzer/enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk`
+   in kliknite `Download raw file`.
+
+2. **Spravite ga na sprejemnik**, na en od dveh načinov:
+
+   - na USB ključek, ki ga priklopite na sprejemnik (pristane v
+     `/media/usb`),
+   - ali prek omrežja:
+     `scp enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk root@192.168.1.25:/tmp/`
+
+3. **Namestite ga.**
+
+   Prek SSH:
+
+   ```bash
+   opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk
+   ```
+
+   Brez računalnika, kar na sprejemniku: poiščite postavko za namestitev
+   lokalnega paketa. V večini slik je pod
+   `Meni → Nastavitve → Programska oprema`, imenuje pa se
+   `Namesti lokalno razširitev` oziroma `Install local extension`. Pokaže
+   datoteke `.ipk` z `/tmp` in s priklopljenih ključkov; izberite našo in
+   potrdite.
+
+4. Nameščalnik izpiše, da je plugin nameščen, in vas opozori na ponovni
+   zagon vmesnika. Pojdite na [3. korak](#3-korak-ponovni-zagon-vmesnika).
+
+Kaj ste s tem pridobili: paket je zaveden v seznamu nameščene programske
+opreme (`opkg list-installed | grep lastscanned`), odstranite pa ga z enim
+ukazom, brez brskanja po mapah:
+
+```bash
+opkg remove enigma2-plugin-extensions-lastscannedanalyzer
+```
+
+Če kodo spremenite, nov paket zgradite z
+
+```bash
+python3 plugins/LastScannedAnalyzer/naredi-ipk.py
+```
+
+Skripta potrebuje samo Python, nobenih orodij OpenEmbedded, in vzame
+različico kar iz `plugin.py`, da se paket in plugin ne razideta.
+
+### Pot B: z USB ključkom (brez računalniških orodij)
 
 1. Mapo `LastScannedAnalyzer` prekopirajte na USB ključek (formatiran kot
    FAT32).
@@ -92,7 +156,7 @@ tuja.
    povsod pa gre za isti dve dejanji: označi in kopiraj.
 7. Pojdite na [3. korak](#3-korak-ponovni-zagon-vmesnika).
 
-### Pot B: prek omrežja (WinSCP, Windows)
+### Pot C: prek omrežja (WinSCP, Windows)
 
 1. Namestite **WinSCP** z naslova `winscp.net`.
 2. Zaženite ga in vpišite:
@@ -115,7 +179,7 @@ tuja.
    desno okno.
 6. Pojdite na [3. korak](#3-korak-ponovni-zagon-vmesnika).
 
-### Pot C: prek omrežja (ukazna vrstica)
+### Pot D: prek omrežja (ukazna vrstica)
 
 Na Linuxu, macOS ali v Windows PowerShellu, v mapi, kjer je
 `plugins/LastScannedAnalyzer`:
@@ -261,12 +325,24 @@ je vredno pokazati naprej.
 
 ## Kako ga odstranim
 
-Prek SSH:
+Če ste ga namestili **s paketom `.ipk` (pot A)**:
+
+```bash
+opkg remove enigma2-plugin-extensions-lastscannedanalyzer
+init 4 && sleep 3 && init 3
+```
+
+Če ste datoteke **prekopirali ročno (poti B, C, D)**:
 
 ```bash
 rm -rf /usr/lib/enigma2/python/Plugins/Extensions/LastScannedAnalyzer
-rm -f /etc/enigma2/lastscanned_analyzer.json
 init 4 && sleep 3 && init 3
+```
+
+Shranjeno stanje v obeh primerih ostane; če ga ne potrebujete več:
+
+```bash
+rm -f /etc/enigma2/lastscanned_analyzer.json
 ```
 
 Buketi, ki ste jih z njim naredili, ostanejo. Plugin jih ne odnese s
