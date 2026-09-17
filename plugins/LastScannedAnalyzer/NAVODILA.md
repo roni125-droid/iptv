@@ -12,6 +12,7 @@ domače, poglavje preprosto preskočite.
   - [Pot C: prek omrežja (WinSCP)](#pot-c-prek-omrežja-winscp-windows)
   - [Pot D: prek omrežja (ukazna vrstica)](#pot-d-prek-omrežja-ukazna-vrstica)
   - [Čiščenje starih datotek](#čiščenje-starih-datotek)
+  - [Nadgradnja s starejše različice](#nadgradnja-s-starejše-različice)
 - [3. korak: ponovni zagon vmesnika](#3-korak-ponovni-zagon-vmesnika)
 - [4. korak: prva uporaba](#4-korak-prva-uporaba)
 - [Kako plugin dela od znotraj](#kako-plugin-dela-od-znotraj)
@@ -26,14 +27,16 @@ kdaj so prišli. Kanal je gledljiv šele, ko je v kakem **buketu** (seznamu,
 ki ga vidite, ko na daljincu pritisnete OK).
 
 Prav to je nadloga po vsakem skeniranju: v bazi je na primer 1200 kanalov,
-40 jih je novih, ročno pa jih iščete enega po enega.
+40 jih je novih, ročno pa jih iščete enega po enega. Povrhu je velika
+večina najdenega kodirana in je brez kartice ne morete gledati.
 
-Plugin naredi troje:
+Plugin naredi štiri stvari:
 
 1. prebere bazo `lamedb`,
-2. pogleda, kateri kanali **niso v nobenem buketu** — to so tisti, ki so
-   po skeniranju ostali nerazvrščeni, in dobijo oznako `[NEW]`,
-3. tiste, ki jih izberete, zapiše v buket, ki ga izberete ali ustvarite.
+2. **novince označi z `[NEW]`** in jih postavi na vrh seznama,
+3. **kodirane zna skriti**, da ostanejo na zaslonu samo prosti (FTA)
+   kanali; po imenu zna tudi iskati,
+4. tiste, ki jih izberete, zapiše v buket, ki ga izberete ali ustvarite.
 
 Baze `lamedb` pri tem nikoli ne spreminja. Piše samo v bukete, pred prvo
 spremembo pa naredi varnostno kopijo.
@@ -255,6 +258,37 @@ Ko konča, ga lahko odstranite, saj je svoje opravil:
 ```bash
 opkg remove enigma2-plugin-extensions-lastscannedanalyzer-cistilec
 ```
+
+### Nadgradnja s starejše različice
+
+Če je na sprejemniku že starejša različica, je ni treba odstranjevati.
+Namestite novo čez staro, po isti poti A:
+
+```bash
+opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer_1.1_all.ipk
+```
+
+`opkg` staro odjavi in novo zapiše na isto mesto, nato pa je potreben
+ponovni zagon vmesnika. Kaj se pri tem zgodi z vašimi podatki:
+
+| Kaj | Se ohrani? |
+| --- | --- |
+| Buketi, ki ste jih naredili | da, plugin se jih pri nadgradnji ne dotakne |
+| Shranjeno stanje (`lastscanned_analyzer.json`) | da, oznake `[NEW]` ostanejo take, kot so bile |
+| Varnostne kopije `.lsa-bak` | da |
+
+Različico, ki teče, preverite z:
+
+```bash
+opkg list-installed | grep lastscanned
+```
+
+Če `opkg` javi, da je paket že nameščen, ste najbrž poskusili namestiti
+isto številko različice čez sebe. Nadgradnja na višjo številko gre brez
+težav, isto različico pa znova namestite z `opkg install --force-reinstall`.
+
+Čistilec je pri nadgradnji odveč — potreben je le, če ste plugin kdaj
+kopirali ročno.
 
 ## 3. korak: ponovni zagon vmesnika
 

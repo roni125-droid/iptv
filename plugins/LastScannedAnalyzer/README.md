@@ -179,11 +179,16 @@ teče. Datoteka izgleda takole:
 
 ```json
 {
-  "version": "1.1",
-  "url": "https://primer.si/lastscanned-1.1.tar.gz",
+  "version": "1.2",
+  "url": "https://primer.si/lastscanned-1.2.tar.gz",
   "changes": "Kaj je novega"
 }
 ```
+
+Številka mora biti višja od tiste, ki teče na sprejemniku, sicer plugin
+javi, da ste na zadnji različici. Trenutna je 1.1, zapisana v `plugin.py`
+(`RAZLICICA`) in v `version.json`; `naredi-ipk.py` jo vzame od tam in
+opozori, če se datoteki ne ujemata.
 
 Arhiv `tar.gz` mora vsebovati mapo `LastScannedAnalyzer` z datotekami
 plugina. Nič se ne namesti samo od sebe — plugin prej vpraša, ali naj
