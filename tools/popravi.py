@@ -133,12 +133,20 @@ def http_candidates(url: str) -> list[str]:
     parts = urllib.parse.urlsplit(url)
     if parts.scheme.lower() != "https":
         return []
+    bare = parts.hostname or ""
     out = [urllib.parse.urlunsplit(("http",) + tuple(parts)[1:])]
     if parts.port:
-        bare = parts.hostname or ""
         out.append(
             urllib.parse.urlunsplit(("http", bare, parts.path, parts.query, ""))
         )
+    # Wowza strezhe sifrirano na 443 ali 4443, nesifrirano pa na 1935 ali 8086.
+    if (parts.port or 443) in (443, 4443):
+        for port in (1935, 8086):
+            out.append(
+                urllib.parse.urlunsplit(
+                    ("http", f"{bare}:{port}", parts.path, parts.query, "")
+                )
+            )
     return out
 
 

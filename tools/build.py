@@ -27,6 +27,11 @@ DB_RAW = "https://raw.githubusercontent.com/iptv-org/database/master/data"
 # Izvorne datoteke, ki jih preberemo (hu.m3u zaradi Pannon RTV iz Vojvodine).
 SOURCE_FILES = ["si.m3u", "hr.m3u", "ba.m3u", "rs.m3u", "hu.m3u"]
 
+# Jeziki nasih drzav. Kanal, ki stoji v enem od zgornjih virov in govori enega
+# od teh jezikov, sodi v seznam tudi, ce ga baza vodi pod drugo drzavo. Tako
+# ujamemo izseljenske postaje, na primer srbsko MIS Televizijo iz Avstralije.
+OUR_LANGUAGES = {"srp", "hrv", "bos", "slv", "hbs"}
+
 COUNTRIES = OrderedDict(
     [
         ("si", "Slovenija"),
@@ -51,7 +56,6 @@ HOST_DENYLIST = (
     "nexttv.ht.hr",
     "united.cloud",
     "webtvstream.bhtelecom.ba",
-    "cutuk.net",
     "mirtv.club",      # vraca vrinjeno oglasno skripto namesto pretoka
 )
 
@@ -151,7 +155,7 @@ def keep(tvg_id: str, title: str, url: str, ua: bool,
     if ua:
         return False          # ponarejen User-Agent = obhod zascite vira
     host = host_of(url)
-    if is_bare_ip(host) and not (ip_channels == 1 and own_server(title, url)):
+    if is_bare_ip(host) and ip_channels != 1:
         return False          # gol IP z vec programi je preprodajalski panel
     if any(bad in host for bad in HOST_DENYLIST):
         return False
@@ -164,10 +168,14 @@ def keep(tvg_id: str, title: str, url: str, ua: bool,
     return True
 
 
-def country_of(tvg_id: str, source: str) -> str | None:
+def country_of(tvg_id: str, source: str, our_language: bool = False) -> str | None:
     m = re.search(r"\.([a-z]{2})@", tvg_id)
     code = m.group(1) if m else source[:2]
-    return code if code in COUNTRIES else None
+    if code in COUNTRIES:
+        return code
+    if our_language and source[:2] in COUNTRIES:
+        return source[:2]     # izseljenska postaja, uvrstimo jo po viru
+    return None
 
 
 def quality_rank(title: str, url: str) -> tuple:
@@ -204,6 +212,13 @@ def flags(title: str) -> str:
 
 def build(cache: str | None, outdir: str) -> dict:
     channels = {c["id"]: c for c in read_csv("channels.csv", cache)}
+    speaks_ours: set[str] = set()
+    try:
+        for row in read_csv("feeds.csv", cache):
+            if OUR_LANGUAGES & set((row.get("languages") or "").split(";")):
+                speaks_ours.add(row["channel"])
+    except Exception as exc:  # pragma: no cover
+        print(f"opozorilo: feeds.csv ni na voljo ({exc})", file=sys.stderr)
     logos: dict[str, str] = {}
     for row in read_csv("logos.csv", cache):
         logos.setdefault(row["channel"], row["url"])
@@ -228,7 +243,9 @@ def build(cache: str | None, outdir: str) -> dict:
         if text is None:
             continue
         for tvg_id, title, url, ua in parse_entries(text):
-            country = country_of(tvg_id, src)
+            country = country_of(
+                tvg_id, src, tvg_id.split("@")[0] in speaks_ours
+            )
             n = len(ip_count.get(host_of(url), {None}))
             if country is None or not keep(tvg_id, title, url, ua, n):
                 continue

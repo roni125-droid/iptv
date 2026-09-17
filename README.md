@@ -53,12 +53,12 @@ v katerih so programi, ki oddajajo ves dan. Za njimi so skupine z dodatkom
 `- obcasni`, kjer so postaje, ki oddajajo le del dneva ali so geografsko
 zaklenjene.
 
-| Skupina | Kanalov |
-| --- | --- |
-| Slovenija | 3 stalnih, 2 občasna |
-| Hrvaška | 8 stalnih, 6 občasnih |
-| Bosna in Hercegovina | 7 stalnih, 4 občasni |
-| Srbija | 15 stalnih, 7 občasnih |
+| Skupina | Stalnih | Občasnih |
+| --- | --- | --- |
+| Slovenija | 3 | 2 |
+| Hrvaška | 9 | 6 |
+| Bosna in Hercegovina | 7 | 6 |
+| Srbija | 15 | 8 |
 
 V oglatem oklepaju za imenom kanala so tri vrste podatkov:
 
@@ -71,6 +71,20 @@ V oglatem oklepaju za imenom kanala so tri vrste podatkov:
 Ločljivost je vredno pogledati, preden se čudite mehki sliki. Marsikatera
 lokalna postaja oddaja v 288p ali 480p in to je pri njej normalno, ne okvara.
 Najnižje v seznamu so TV Pirot pri 240p ter Kanal 6 in TNT Kids pri 288p.
+
+## Popravljanje seznama
+
+`tools/popravi.py` v enem prehodu odstrani kanale, ki jih strežnik dokončno
+zavrača, kanalom s pokvarjenim potrdilom preklopi naslov na HTTP in vse skupaj
+pripne na najboljšo sliko:
+
+```bash
+python3 tools/popravi.py ex-yu.m3u --out ex-yu-ok.m3u
+```
+
+Na Windows isto naredi dvoklik na `tools/popravi.bat`. Kanal, ki se ta trenutek
+ne odziva, ostane v seznamu z izvirnim naslovom, ker je postaja lahko preprosto
+zunaj programa.
 
 Pri občasnih postajah je napaka ob odprtju pričakovana in ne pomeni mrtve
 povezave. Lokalne televizije pogosto oddajajo šele popoldne in zvečer, zato
