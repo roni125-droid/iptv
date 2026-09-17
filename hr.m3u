@@ -1,29 +1,29 @@
 #EXTM3U
 #EXTINF:-1 tvg-id="BravoKidsTV.hr@SD" tvg-logo="https://i.imgur.com/JcJ6fQ9.png" group-title="Hrvaška",Bravo! Kids TV
 https://streaming.radiohub.hr/RadioHub_WEB_streaming/BHWUC27pGZ/3.m3u8
-#EXTINF:-1 tvg-id="CMCTV.hr@SD" tvg-logo="https://i.imgur.com/FCb7Ag2.png" group-title="Hrvaška",CMC TV
+#EXTINF:-1 tvg-id="CMCTV.hr@SD" tvg-logo="https://i.imgur.com/FCb7Ag2.png" group-title="Hrvaška",CMC TV [1080p]
 https://stream.cmctv.hr:49998/cmc/live.m3u8
 #EXTINF:-1 tvg-id="DiadoraTV.hr@SD" tvg-logo="https://i.imgur.com/qZzsASl.png" group-title="Hrvaška",Diadora TV
 https://diadoratv.stream/live/diadora/playlist.m3u8
-#EXTINF:-1 tvg-id="KlapeiTambureTV.hr@SD" tvg-logo="https://i.imgur.com/sKj3dgc.png" group-title="Hrvaška",Klape i Tambure TV
+#EXTINF:-1 tvg-id="KlapeiTambureTV.hr@SD" tvg-logo="https://i.imgur.com/sKj3dgc.png" group-title="Hrvaška",Klape i Tambure TV [1080p]
 https://stream.cmctv.hr:49998/kit/live.m3u8
-#EXTINF:-1 tvg-id="Klasik.hr@SD" tvg-logo="https://i.imgur.com/C90BYlb.png" group-title="Hrvaška - obcasni",Klasik [ni 24/7]
+#EXTINF:-1 tvg-id="Klasik.hr@SD" tvg-logo="https://i.imgur.com/C90BYlb.png" group-title="Hrvaška - obcasni",Klasik [576p, ni 24/7]
 https://178.253.194.105/klasiktv/playlist.m3u8
-#EXTINF:-1 tvg-id="LibertasTV.hr@SD" tvg-logo="https://i.imgur.com/4R4fhbd.png" group-title="Hrvaška",Libertas TV
+#EXTINF:-1 tvg-id="LibertasTV.hr@SD" tvg-logo="https://i.imgur.com/4R4fhbd.png" group-title="Hrvaška",Libertas TV [1080p]
 https://stream.luci.xyz/hls/LTV.m3u8
-#EXTINF:-1 tvg-id="OTV.hr@SD" tvg-logo="https://i.imgur.com/67zVdu2.png" group-title="Hrvaška - obcasni",OTV [ni 24/7]
+#EXTINF:-1 tvg-id="OTV.hr@SD" tvg-logo="https://i.imgur.com/67zVdu2.png" group-title="Hrvaška - obcasni",OTV [720p, ni 24/7]
 https://stream.agatin.hr:3559/live/otvlive.m3u8
-#EXTINF:-1 tvg-id="RadioTelevizijaBanovina.hr@SD" tvg-logo="https://i.imgur.com/gCFgC5D.png" group-title="Hrvaška - obcasni",Radio Televizija Banovina [ni 24/7]
+#EXTINF:-1 tvg-id="RadioTelevizijaBanovina.hr@SD" tvg-logo="https://i.imgur.com/gCFgC5D.png" group-title="Hrvaška - obcasni",Radio Televizija Banovina [1080p, ni 24/7]
 https://pool.alter-media.hr:1936/live/myStream/playlist.m3u8?DVR=
-#EXTINF:-1 tvg-id="SBTV.hr@SD" tvg-logo="https://i.imgur.com/MIampxZ.png" group-title="Hrvaška - obcasni",SBTV [ni 24/7]
+#EXTINF:-1 tvg-id="SBTV.hr@SD" tvg-logo="https://i.imgur.com/MIampxZ.png" group-title="Hrvaška - obcasni",SBTV [1080p, ni 24/7]
 https://live.leveex.hr/hls/live.m3u8
-#EXTINF:-1 tvg-id="ShiftTV.hr@SD" tvg-logo="https://i.imgur.com/mudXVT8.png" group-title="Hrvaška",Shift TV
+#EXTINF:-1 tvg-id="ShiftTV.hr@SD" tvg-logo="https://i.imgur.com/mudXVT8.png" group-title="Hrvaška",Shift TV [1080p]
 https://hls.shift.tv/live/shifttv/playlist.m3u8
-#EXTINF:-1 tvg-id="TrendTV.hr@SD" tvg-logo="https://i.imgur.com/4SmNISY.jpg" group-title="Hrvaška",Trend TV
+#EXTINF:-1 tvg-id="TrendTV.hr@SD" tvg-logo="https://i.imgur.com/4SmNISY.jpg" group-title="Hrvaška",Trend TV [480p]
 http://185.62.75.22:1935/trend/myStream/playlist.m3u8
-#EXTINF:-1 tvg-id="TVJadran.hr@SD" tvg-logo="https://i.imgur.com/UWMHnOG.png" group-title="Hrvaška - obcasni",TV Jadran [ni 24/7]
+#EXTINF:-1 tvg-id="TVJadran.hr@SD" tvg-logo="https://i.imgur.com/UWMHnOG.png" group-title="Hrvaška - obcasni",TV Jadran [720p, ni 24/7]
 https://tvjadran.stream.agatin.hr:3412/live/tvjadranlive.m3u8
-#EXTINF:-1 tvg-id="TVNova.hr@SD" tvg-logo="https://i.imgur.com/gFjJ7YB.png" group-title="Hrvaška",TV Nova
+#EXTINF:-1 tvg-id="TVNova.hr@SD" tvg-logo="https://i.imgur.com/gFjJ7YB.png" group-title="Hrvaška",TV Nova [720p]
 https://stream.agatin.hr:3727/live/tvnovalive.m3u8
-#EXTINF:-1 tvg-id="TVZapad.hr@SD" tvg-logo="https://i.imgur.com/cgCeX12.png" group-title="Hrvaška - obcasni",TV Zapad [ni 24/7]
+#EXTINF:-1 tvg-id="TVZapad.hr@SD" tvg-logo="https://i.imgur.com/cgCeX12.png" group-title="Hrvaška - obcasni",TV Zapad [1080p, ni 24/7]
 http://85.94.67.158/TVZAPAD/index.fmp4.m3u8

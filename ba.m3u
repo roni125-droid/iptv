@@ -1,23 +1,23 @@
 #EXTM3U
-#EXTINF:-1 tvg-id="BHRT.ba@SD" tvg-logo="https://i.imgur.com/01bZ5rw.png" group-title="Bosna in Hercegovina - obcasni",BHRT [geo]
+#EXTINF:-1 tvg-id="BHRT.ba@SD" tvg-logo="https://i.imgur.com/01bZ5rw.png" group-title="Bosna in Hercegovina - obcasni",BHRT [720p, geo]
 https://bhrtstream.bhtelecom.ba/bhrtportal.m3u8
-#EXTINF:-1 tvg-id="Kanal6.ba@SD" tvg-logo="https://i.imgur.com/GGhvR0l.png" group-title="Bosna in Hercegovina",Kanal 6
+#EXTINF:-1 tvg-id="Kanal6.ba@SD" tvg-logo="https://i.imgur.com/GGhvR0l.png" group-title="Bosna in Hercegovina",Kanal 6 [288p]
 https://restreamer1.tnt.ba/hls/kanal6.m3u8
-#EXTINF:-1 tvg-id="MariaPlusVisionMedjugorje.ba@SD" tvg-logo="https://i.imgur.com/xUOspBx.png" group-title="Bosna in Hercegovina",Maria+Vision Medjugorje
+#EXTINF:-1 tvg-id="MariaPlusVisionMedjugorje.ba@SD" tvg-logo="https://i.imgur.com/xUOspBx.png" group-title="Bosna in Hercegovina",Maria+Vision Medjugorje [720p]
 https://1601580044.rsc.cdn77.org/live/_jcn_/amlst:Italiasette/playlist.m3u8
-#EXTINF:-1 tvg-id="NewsmaxBalkans.ba@SD" tvg-logo="https://i.imgur.com/BXFPz8c.png" group-title="Bosna in Hercegovina",Newsmax Balkans
+#EXTINF:-1 tvg-id="NewsmaxBalkans.ba@SD" tvg-logo="https://i.imgur.com/BXFPz8c.png" group-title="Bosna in Hercegovina",Newsmax Balkans [1080p]
 https://newsmaxadria.mts-si.tv/newsmaxadria/index.m3u8
-#EXTINF:-1 tvg-id="RTRSplus.ba@SD" tvg-logo="https://i.imgur.com/k06WvYl.png" group-title="Bosna in Hercegovina - obcasni",RTRS plus [ni 24/7]
+#EXTINF:-1 tvg-id="RTRSplus.ba@SD" tvg-logo="https://i.imgur.com/k06WvYl.png" group-title="Bosna in Hercegovina - obcasni",RTRS plus [576p, ni 24/7]
 https://pluslive.rtrs.tv/plus/plus/playlist.m3u8
-#EXTINF:-1 tvg-id="RTRSTV.ba@SD" tvg-logo="https://i.imgur.com/2Sgs5gM.png" group-title="Bosna in Hercegovina - obcasni",RTRS TV [ni 24/7]
+#EXTINF:-1 tvg-id="RTRSTV.ba@SD" tvg-logo="https://i.imgur.com/2Sgs5gM.png" group-title="Bosna in Hercegovina - obcasni",RTRS TV [576p, ni 24/7]
 https://uzivo.rtrs.tv/tv/live/index.m3u8
-#EXTINF:-1 tvg-id="RTVHB.ba@SD" tvg-logo="https://i.imgur.com/6FNL8Iv.png" group-title="Bosna in Hercegovina - obcasni",RTV HB [ni 24/7]
+#EXTINF:-1 tvg-id="RTVHB.ba@SD" tvg-logo="https://i.imgur.com/6FNL8Iv.png" group-title="Bosna in Hercegovina - obcasni",RTV HB [576p, ni 24/7]
 https://prd-hometv-live-open.spectar.tv/ERO_1_083/playlist.m3u8
-#EXTINF:-1 tvg-id="RTVZenica.ba@SD" tvg-logo="https://i.imgur.com/TKUaflB.png" group-title="Bosna in Hercegovina",RTV Zenica
+#EXTINF:-1 tvg-id="RTVZenica.ba@SD" tvg-logo="https://i.imgur.com/TKUaflB.png" group-title="Bosna in Hercegovina",RTV Zenica [720p]
 https://stream.rtvze.ba/live/123/123.m3u8
-#EXTINF:-1 tvg-id="Televizija5.ba@SD" tvg-logo="https://i.imgur.com/znpvJys.png" group-title="Bosna in Hercegovina",Televizija 5
+#EXTINF:-1 tvg-id="Televizija5.ba@SD" tvg-logo="https://i.imgur.com/znpvJys.png" group-title="Bosna in Hercegovina",Televizija 5 [576p]
 https://balkanmedia.dynu.net/hls/tv5web.m3u8
-#EXTINF:-1 tvg-id="TelevizijaM.ba@SD" tvg-logo="https://i.imgur.com/jT95ZEI.png" group-title="Bosna in Hercegovina",Televizija M
+#EXTINF:-1 tvg-id="TelevizijaM.ba@SD" tvg-logo="https://i.imgur.com/jT95ZEI.png" group-title="Bosna in Hercegovina",Televizija M [1080p]
 https://live.tv-m.net/hls/stream.m3u8
-#EXTINF:-1 tvg-id="TNTKidsTV.ba@SD" tvg-logo="https://i.imgur.com/irTDbpn.png" group-title="Bosna in Hercegovina",TNT Kids TV
+#EXTINF:-1 tvg-id="TNTKidsTV.ba@SD" tvg-logo="https://i.imgur.com/irTDbpn.png" group-title="Bosna in Hercegovina",TNT Kids TV [288p]
 https://restreamer1.tnt.ba/hls/tntkids.m3u8

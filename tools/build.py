@@ -186,8 +186,15 @@ def clean_name(title: str) -> str:
 
 
 def flags(title: str) -> str:
-    """Oznake, ki jih je nujno videti v imenu kanala na zaslonu."""
+    """Oznake, ki jih je nujno videti v imenu kanala na zaslonu.
+
+    Poleg razpolozljivosti pokazemo se locljivost izvora. Marsikatera lokalna
+    postaja oddaja v 288p ali 480p in mehka slika pri njej ni okvara.
+    """
     out = []
+    res = re.search(r"\((\d{3,4}p)\)", title)
+    if res:
+        out.append(res.group(1))
     if "[Geo-blocked]" in title:
         out.append("geo")
     if "[Not 24/7]" in title:
@@ -241,6 +248,7 @@ def build(cache: str | None, outdir: str) -> dict:
                 "logo": logos.get(tvg_id.split("@")[0], ""),
                 "url": url,
                 "note": flags(title),
+                "part_time": "[Not 24/7]" in title or "[Geo-blocked]" in title,
             }
         )
     for country in per_country:
@@ -269,9 +277,9 @@ def build(cache: str | None, outdir: str) -> dict:
         total += len(rows)
         single = ["#EXTM3U"]
         for entry in rows:
-            group = label if not entry["note"] else f"{label} - obcasni"
+            group = f"{label} - obcasni" if entry["part_time"] else label
             single += render(entry, group)
-            (sometimes if entry["note"] else always).extend(render(entry, group))
+            (sometimes if entry["part_time"] else always).extend(render(entry, group))
         with open(os.path.join(outdir, f"{code}.m3u"), "w", encoding="utf-8") as fh:
             fh.write("\n".join(single) + "\n")
     with open(os.path.join(outdir, "ex-yu.m3u"), "w", encoding="utf-8") as fh:
@@ -280,7 +288,7 @@ def build(cache: str | None, outdir: str) -> dict:
     print(f"zapisano: {total} kanalov v {outdir}")
     for code, label in COUNTRIES.items():
         rows = per_country[code]
-        stalni = sum(1 for e in rows if not e["note"])
+        stalni = sum(1 for e in rows if not e["part_time"])
         print(f"  {label:<24} {len(rows):>3}  od tega stalnih {stalni}")
     return per_country
 

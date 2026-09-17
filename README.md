@@ -60,7 +60,17 @@ zaklenjene.
 | Bosna in Hercegovina | 7 stalnih, 4 občasni |
 | Srbija | 15 stalnih, 7 občasnih |
 
-V imenih kanalov sta poleg tega oznaki `[ni 24/7]` in `[geo]`.
+V oglatem oklepaju za imenom kanala so tri vrste podatkov:
+
+| Oznaka | Pomen |
+| --- | --- |
+| `[720p]` | ločljivost izvora, kot jo oddaja postaja |
+| `[ni 24/7]` | postaja ne oddaja ves dan |
+| `[geo]` | pretok je omejen na domačo državo |
+
+Ločljivost je vredno pogledati, preden se čudite mehki sliki. Marsikatera
+lokalna postaja oddaja v 288p ali 480p in to je pri njej normalno, ne okvara.
+Najnižje v seznamu so TV Pirot pri 240p ter Kanal 6 in TNT Kids pri 288p.
 
 Pri občasnih postajah je napaka ob odprtju pričakovana in ne pomeni mrtve
 povezave. Lokalne televizije pogosto oddajajo šele popoldne in zvečer, zato
