@@ -211,7 +211,8 @@ def _clan(ime, podatki, nacin):
 def _tar_gz(datoteke):
     """datoteke: seznam (ime v arhivu, vsebina, nacin) -> stisnjen tar."""
     surovi = io.BytesIO()
-    with tarfile.open(fileobj=surovi, mode="w", format=tarfile.GNU_FORMAT) as t:
+    with tarfile.open(fileobj=surovi, mode="w",
+                      format=tarfile.GNU_FORMAT) as t:
         mape = set()
         for ime, _, _ in datoteke:
             mapa = os.path.dirname(ime)

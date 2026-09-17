@@ -119,7 +119,7 @@ Prvi HD
 p:Provajder A,c:0100a,f:40
 0086:00820000:0441:0001:1:0
 Drugi SD
-p:Provajder A,c:0100a
+p:Provajder A,c:0100a,C:0b00,C:0500
 00a1:00c00000:07d0:0085:2:0
 Radio Ena
 p:Provajder B
@@ -179,9 +179,11 @@ def main():
              "zahodni polozaj 3592 je 0.8 W")
 
         print("\niskanje novih kanalov")
+        # Tu preverjamo pravilo o buketih in posnetku baze, zato zastavico
+        # Enigme izklopimo; zanjo je spodaj svoj razdelek.
         v_buketih = bouquets.sklici_v_buketih(mapa)
         trdi(len(v_buketih) == 1, "v buketu je en kanal")
-        plugin.analiziraj(kanali, v_buketih, set())
+        plugin.analiziraj(kanali, v_buketih, set(), uposteva_zastavico=False)
         novi = [k.ime for k in kanali if k.nov]
         trdi("Prvi HD" not in novi, "kanal iz buketa ni nov")
         trdi(sorted(novi) == ["Drugi SD", "Radio Ena"],
@@ -192,13 +194,68 @@ def main():
         znani = set(bouquets.normaliziraj(k.ref) for k in kanali
                     if k.ime != "Drugi SD")
         plugin.analiziraj(kanali, v_buketih | set(
-            bouquets.normaliziraj(k.ref) for k in kanali), znani)
+            bouquets.normaliziraj(k.ref) for k in kanali), znani,
+            uposteva_zastavico=False)
         novi = [k.ime for k in kanali if k.nov]
         trdi(novi == ["Drugi SD"],
              "kanal v buketu je nov, ce ga prej ni bilo v bazi")
 
+        print("\nprosti in kodirani kanali")
+        trdi(not prvi.kodiran, "kanal brez zapisa C: velja za prostega")
+        trdi(prvi.kodiranje == "Free to air", "prost kanal je tako oznacen")
+        drugi = po_imenu.get("Drugi SD")
+        trdi(drugi is not None and drugi.kodiran,
+             "kanal z zapisom C: je kodiran")
+        trdi(drugi is not None and drugi.kodiranje == "Conax, Viaccess",
+             "sifri 0b00 in 0500 se prevedeta v imena sistemov")
+        trdi(not radio.kodiran, "mali c: (predpomnjeni PID-i) ni kodiranje")
+
+        print("\nzastavica dxNewFound")
+        trdi(prvi.oznacen_kot_nov, "f:40 pomeni najden ob skeniranju")
+        trdi(not radio.oznacen_kot_nov, "kanal brez f: ni oznacen")
+        trdi(plugin.zastavica_uporabna(kanali),
+             "ce je oznacen le del baze, je zastavica uporabna")
+        for kanal in kanali:
+            kanal.zastavice = 0x40
+        trdi(not plugin.zastavica_uporabna(kanali),
+             "ce so oznaceni vsi, je zastavica brez pomena in jo zanemarimo")
+        for kanal in kanali:
+            kanal.zastavice = 0
+        trdi(not plugin.zastavica_uporabna(kanali),
+             "brez oznacenih ni kaj upostevati")
+        prvi.zastavice = 0x40
+        vsi_sklici = set(bouquets.normaliziraj(k.ref) for k in kanali)
+        plugin.analiziraj(kanali, vsi_sklici, vsi_sklici)
+        trdi(prvi.nov,
+             "kanal v buketu in v posnetku je nov, ce ga zastavica oznacuje")
+        plugin.analiziraj(kanali, vsi_sklici, vsi_sklici,
+                          uposteva_zastavico=False)
+        trdi(not prvi.nov, "brez upostevanja zastavice tak kanal ni nov")
+
+        print("\nfiltri in iskanje")
+        plugin.analiziraj(kanali, v_buketih, set(), uposteva_zastavico=False)
+        vsi = plugin.filtriraj(kanali)
+        trdi(len(vsi) == 3, "brez filtra so na zaslonu vsi")
+        prosti = plugin.filtriraj(kanali, samo_fta=True)
+        trdi([k.ime for k in prosti] == ["Prvi HD", "Radio Ena"]
+             or sorted(k.ime for k in prosti) == ["Prvi HD", "Radio Ena"],
+             "filter FTA odstrani kodirane")
+        trdi(all(not k.kodiran for k in prosti),
+             "med prostimi ni nobenega kodiranega")
+        najdeni = plugin.filtriraj(kanali, iskanje="radio")
+        trdi([k.ime for k in najdeni] == ["Radio Ena"],
+             "iskanje najde kanal po delu imena")
+        trdi([k.ime for k in plugin.filtriraj(kanali, iskanje="RADIO")]
+             == ["Radio Ena"], "iskanje ne loci velikih in malih crk")
+        trdi(plugin.filtriraj(kanali, iskanje="cesar ni") == [],
+             "iskanje brez zadetka vrne prazen seznam")
+        sestavljeno = plugin.filtriraj(kanali, samo_novi=True, samo_fta=True,
+                                       iskanje="a")
+        trdi(all(k.nov and not k.kodiran and "a" in k.ime.lower()
+                 for k in sestavljeno), "pogoji filtrov se sestevajo")
+
         print("\nprenos v obstojeci buket")
-        plugin.analiziraj(kanali, v_buketih, set())
+        plugin.analiziraj(kanali, v_buketih, set(), uposteva_zastavico=False)
         buket = bouquets.seznam(mapa)[0]
         trdi(buket.ime == "Moji programi", "ime buketa je prebrano iz #NAME")
         izbrani = [k for k in kanali if k.nov]
@@ -211,7 +268,8 @@ def main():
              "pred spremembo nastane varnostna kopija buketa")
         po_prenosu = bouquets.sklici_v_buketih(mapa)
         trdi(len(po_prenosu) == 3, "v buketu so zdaj vsi trije kanali")
-        plugin.analiziraj(kanali, po_prenosu, set())
+        plugin.analiziraj(kanali, po_prenosu, set(),
+                          uposteva_zastavico=False)
         trdi(not any(k.nov for k in kanali),
              "po prenosu ni vec nobenega [NEW]")
 
@@ -242,6 +300,12 @@ def main():
         kanali[0].nov = True
         besedila = [d[1].get("text") for d in seznam._vrstica(kanali[0])[1:]]
         trdi("[NEW]" in besedila, "nov kanal dobi oznako [NEW]")
+        kodiran = [k for k in kanali if k.kodiran][0]
+        besedila = [d[1].get("text") for d in seznam._vrstica(kodiran)[1:]]
+        trdi("CA" in besedila, "kodiran kanal dobi oznako CA")
+        prost = [k for k in kanali if not k.kodiran][0]
+        besedila = [d[1].get("text") for d in seznam._vrstica(prost)[1:]]
+        trdi("CA" not in besedila, "prost kanal oznake CA nima")
 
         print("\nzapis stanja")
         plugin.STANJE = os.path.join(mapa, "stanje.json")
@@ -261,6 +325,15 @@ def main():
              "novejsi zapis lamedb5 se prebere enako")
         trdi(kanali5[0].ref == "1:0:19:85:441:1:820000:0:0:0:",
              "sklic iz lamedb5 je enak kot iz lamedb")
+        with open(pot5, "a") as fh:
+            fh.write('s:0091:00820000:0441:0001:1:0,"Kodiran 5",'
+                     '"p:X,c:0011,C:1801,f:40"\n')
+        kodirani5 = [k for k in lamedb.preberi(pot5) if k.ime == "Kodiran 5"]
+        trdi(kodirani5 and kodirani5[0].kodiran and
+             kodirani5[0].kodiranje == "Nagravision",
+             "tudi v lamedb5 se prebere kodiranje")
+        trdi(kodirani5 and kodirani5[0].oznacen_kot_nov,
+             "tudi v lamedb5 se prebere zastavica f:40")
     finally:
         shutil.rmtree(mapa, ignore_errors=True)
 

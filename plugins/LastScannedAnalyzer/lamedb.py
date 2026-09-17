@@ -56,6 +56,40 @@ VRSTA = {
 }
 
 
+# Sifre sistemov za kodiranje (CAID). V bazi stojijo kot zapisi "C:0b00".
+# Zanima nas prvi bajt, ker drugi loci ponudnike znotraj istega sistema.
+KODIRANJE = {
+    0x01: "Seca / Mediaguard",
+    0x05: "Viaccess",
+    0x06: "Irdeto",
+    0x09: "NDS / Videoguard",
+    0x0B: "Conax",
+    0x0D: "Cryptoworks",
+    0x0E: "PowerVu",
+    0x17: "BetaCrypt",
+    0x18: "Nagravision",
+    0x26: "BISS",
+    0x27: "Alphacrypt",
+    0x4A: "DRE-Crypt",
+}
+
+# Zastavice iz stolpca "f:". Enigma z 0x40 oznaci kanal, ki ga je nasla
+# zadnje skeniranje (v izvorni kodi dxNewFound).
+NOV_PO_SKENIRANJU = 0x40
+
+
+def opis_kodiranja(caidi):
+    """Iz sifer naredi berljiv seznam, npr. "Conax, Viaccess"."""
+    imena = []
+    for caid in caidi:
+        ime = KODIRANJE.get(caid >> 8)
+        if ime and ime not in imena:
+            imena.append(ime)
+    if not imena:
+        return "kodiran (%s)" % ", ".join("%04X" % c for c in caidi)
+    return ", ".join(imena)
+
+
 def opis_vrste(stype):
     return VRSTA.get(stype, ("TV" if stype < 128 else "Data", "?"))
 
@@ -162,7 +196,8 @@ def razclleni_transponder(besedilo):
 class Kanal(object):
     """En kanal iz baze, skupaj s transponderjem, s katerega je prisel."""
 
-    def __init__(self, sid, ns, tsid, onid, stype, ime, ponudnik, transponder):
+    def __init__(self, sid, ns, tsid, onid, stype, ime, ponudnik, transponder,
+                 caidi=None, zastavice=0):
         self.sid = sid
         self.ns = ns
         self.tsid = tsid
@@ -171,6 +206,8 @@ class Kanal(object):
         self.ime = ime or "(brez imena)"
         self.ponudnik = ponudnik or ""
         self.transponder = transponder
+        self.caidi = caidi or []
+        self.zastavice = zastavice
         self.nov = False            # nastavi analiza v plugin.py
         self.oznacen = False        # zeleni gumb
 
@@ -188,6 +225,26 @@ class Kanal(object):
     def locljivost(self):
         return opis_vrste(self.stype)[1]
 
+    @property
+    def kodiran(self):
+        """Ali je kanal kodiran?
+
+        Sifre kodiranja se v bazo zapisejo ob skeniranju oziroma ob prvem
+        odprtju kanala. Kanal, ki ga sprejemnik se nikoli ni odprl, jih zna
+        imeti prazne, zato to bere takole: kanal s sifro je zagotovo
+        kodiran, kanal brez nje pa najverjetneje prost.
+        """
+        return bool(self.caidi)
+
+    @property
+    def kodiranje(self):
+        return opis_kodiranja(self.caidi) if self.caidi else "Free to air"
+
+    @property
+    def oznacen_kot_nov(self):
+        """Ali je Enigma kanal oznacila kot najden ob zadnjem skeniranju?"""
+        return bool(self.zastavice & NOV_PO_SKENIRANJU)
+
     def vrstice(self):
         """Pari (oznaka, vrednost) za okno INFO."""
         podatki = [("Name", self.ime),
@@ -197,6 +254,7 @@ class Kanal(object):
         podatki += [
             ("Resolution", self.locljivost),
             ("Type", opis_vrste(self.stype)[0]),
+            ("Encryption", self.kodiranje),
             ("Service ref", self.ref),
         ]
         return podatki
@@ -216,6 +274,38 @@ def _ponudnik(zastavice):
         if del_.startswith("p:"):
             return del_[2:]
     return ""
+
+
+def _caidi(zastavice):
+    """Sifre sistemov za kodiranje iz zapisov "C:0b00".
+
+    Pozor na velikost crke: mali "c:" so predpomnjeni PID-i, veliki "C:" pa
+    sifre kodiranja. Kanal brez enega samega "C:" je po vsej verjetnosti
+    prost, ni pa to zagotovilo - glej opozorilo pri Kanal.kodiran.
+    """
+    izid = []
+    for del_ in (zastavice or "").split(","):
+        del_ = del_.strip()
+        if del_.startswith("C:") and len(del_) > 2:
+            try:
+                caid = int(del_[2:], 16)
+            except ValueError:
+                continue
+            if caid and caid not in izid:
+                izid.append(caid)
+    return izid
+
+
+def _zastavice(besedilo):
+    """Stevilo iz zapisa "f:40"."""
+    for del_ in (besedilo or "").split(","):
+        del_ = del_.strip()
+        if del_.startswith("f:"):
+            try:
+                return int(del_[2:], 16)
+            except ValueError:
+                return 0
+    return 0
 
 
 # --- zapis /4/ -------------------------------------------------------------
@@ -273,7 +363,8 @@ def _preberi_v4(vrstice):
             continue
         kanali.append(Kanal(sid, ns, tsid, onid, stype, ime,
                             _ponudnik(zastavice),
-                            transponderji.get((ns, tsid, onid))))
+                            transponderji.get((ns, tsid, onid)),
+                            _caidi(zastavice), _zastavice(zastavice)))
     return kanali
 
 
@@ -330,7 +421,8 @@ def _preberi_v5(vrstice):
     for sid, ns, tsid, onid, stype, ime, zastavice in surovi:
         kanali.append(Kanal(sid, ns, tsid, onid, stype, ime,
                             _ponudnik(zastavice),
-                            transponderji.get((ns, tsid, onid))))
+                            transponderji.get((ns, tsid, onid)),
+                            _caidi(zastavice), _zastavice(zastavice)))
     return kanali
 
 

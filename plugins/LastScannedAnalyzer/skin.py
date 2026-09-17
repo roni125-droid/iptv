@@ -25,16 +25,18 @@ BARVA_BESEDILA = 0xD8DEE9
 BARVA_BLEDA = 0x8A94A3
 BARVA_NOVO = 0x7EE081
 BARVA_OZNACENO = 0xFFD166
+BARVA_KODIRAN = 0xE07A5F
 BARVA_IZBRANO = 0xFFFFFF
 
 # --- mere pri 1280x720 -----------------------------------------------------
 
 _VISINA_VRSTICE = 44
 _S_OZNAKA = (8, 62)          # [ * ]
-_S_IME = (78, 560)
-_S_PONUDNIK = (648, 270)
-_S_LOCLJIVOST = (928, 150)
-_S_NOVO = (1082, 120)
+_S_IME = (78, 540)
+_S_PONUDNIK = (628, 250)
+_S_LOCLJIVOST = (888, 120)
+_S_KODIRAN = (1016, 56)      # CA = kodiran, prazno = prost
+_S_NOVO = (1080, 120)
 _PISAVA_VELIKA = 24
 _PISAVA_MALA = 20
 _ZAMIK_SEZNAMA = 20          # x, kjer se zacne seznam
@@ -66,6 +68,7 @@ def _glave():
     """Naslovi stolpcev stojijo tocno nad stolpci v seznamu."""
     stolpci = (("ime", _S_IME, "left"), ("ponudnik", _S_PONUDNIK, "left"),
                ("locljivost", _S_LOCLJIVOST, "left"),
+               ("kodiran", _S_KODIRAN, "left"),
                ("stanje", _S_NOVO, "right"))
     return "".join(_GLAVA % (ime, x + _ZAMIK_SEZNAMA, sirina, poravnava)
                    for ime, (x, sirina), poravnava in stolpci)
@@ -167,6 +170,7 @@ S_OZNAKA = (p(_S_OZNAKA[0]), p(_S_OZNAKA[1]))
 S_IME = (p(_S_IME[0]), p(_S_IME[1]))
 S_PONUDNIK = (p(_S_PONUDNIK[0]), p(_S_PONUDNIK[1]))
 S_LOCLJIVOST = (p(_S_LOCLJIVOST[0]), p(_S_LOCLJIVOST[1]))
+S_KODIRAN = (p(_S_KODIRAN[0]), p(_S_KODIRAN[1]))
 S_NOVO = (p(_S_NOVO[0]), p(_S_NOVO[1]))
 PISAVA_VELIKA = p(_PISAVA_VELIKA)
 PISAVA_MALA = p(_PISAVA_MALA)

@@ -11,10 +11,12 @@ Gumbi:
     RDECI    izhod
     ZELENI   oznaci / odznaci kanal ([ * ])
     RUMENI   pokazi samo [NEW] kanale, se enkrat pa spet vse
-    MODRI    prenesi oznacene (ali vse nove) v buket, tudi v nov buket
-    MENU     Scan Channels / Check for Updates
+    MODRI    prenesi oznacene (ali vse nove med prikazanimi) v buket
+    MENU     filtri, iskanje, skeniranje, posodobitve
     INFO     picon, satelit, frekvenca, polarizacija, hitrost simbolov
     OK       enako kot zeleni gumb
+    1        pokazi samo proste (FTA) kanale, se enkrat pa spet vse
+    2        iskanje po imenu kanala
 
 Po prenosu plugin sam poklice reloadBouquets, zato risiverja ni treba
 ponovno zaganjati.
@@ -45,7 +47,7 @@ from . import picon as piconi
 from . import skin as videz
 from . import update as posodobitve
 
-RAZLICICA = "1.0"
+RAZLICICA = "1.1"
 
 MAPA_PLUGINA = os.path.dirname(os.path.abspath(__file__))
 STANJE = "/etc/enigma2/lastscanned_analyzer.json"
@@ -74,27 +76,71 @@ def zapisi_stanje(sklici):
 
 # --- analiza ---------------------------------------------------------------
 
-def analiziraj(kanali, sklici_v_buketih, prejsnji_sklici):
+# Ce zastavico "najden ob skeniranju" nosi vec kot toliksen delez kanalov,
+# je slika ocitno ne cisti in kot znak novosti ne pove nicesar.
+MEJA_ZASTAVICE = 0.8
+
+
+def zastavica_uporabna(kanali):
+    """Ali se je na zastavico Enigme sploh vredno ozirati?
+
+    Enigma kanal, ki ga najde skeniranje, oznaci z bitom dxNewFound. Nekatere
+    slike te zastavice nikoli ne pocistijo in jo potem nosi domala vsa baza.
+    V takem primeru je neuporabna in se je rajsi ne dotaknemo.
+    """
+    if not kanali:
+        return False
+    oznacenih = sum(1 for k in kanali if k.oznacen_kot_nov)
+    if not oznacenih:
+        return False
+    return oznacenih < MEJA_ZASTAVICE * len(kanali)
+
+
+def analiziraj(kanali, sklici_v_buketih, prejsnji_sklici,
+               uposteva_zastavico=None):
     """Oznaci, kateri kanali so novi, in jih razvrsti.
 
-    Nov je kanal, ki po skeniranju ni pristal v nobenem buketu, ali kanal,
-    ki ga ob zadnjem zagonu plugina v bazi se ni bilo. Prvi pogoj ujame
-    obicajno skeniranje, drugi pa kanal, ki ga je Enigma sama dodala v
-    buket, a je vseeno nov.
+    Nov je kanal, pri katerem velja karkoli od tega:
 
-    Ob prvem zagonu prejsnjih sklicev ni. Takrat velja samo prvi pogoj,
-    sicer bi bili novi cisto vsi kanali v bazi.
+      1. po skeniranju ni pristal v nobenem buketu,
+      2. ob zadnjem zagonu plugina ga v bazi se ni bilo,
+      3. Enigma ga je ob skeniranju oznacila z dxNewFound.
+
+    Prvi pogoj ujame obicajno skeniranje, druga dva pa kanal, ki ga je
+    Enigma sama dodala v buket in bi ga prvi pogoj spregledal. Tretji
+    pogoj deluje tudi ob prvem zagonu, ko posnetka baze se ni.
+
+    Ob prvem zagonu prvi pogoj odpade le, kolikor mu nasprotuje zastavica;
+    drugace bi bili novi cisto vsi kanali v bazi.
     """
     prvi_zagon = not prejsnji_sklici
+    if uposteva_zastavico is None:
+        uposteva_zastavico = zastavica_uporabna(kanali)
     for kanal in kanali:
         sklic = bouquets.normaliziraj(kanal.ref)
         nerazvrscen = sklic not in sklici_v_buketih
         nov_po_skeniranju = (not prvi_zagon) and sklic not in prejsnji_sklici
-        kanal.nov = nerazvrscen or nov_po_skeniranju
+        kanal.nov = (nerazvrscen or nov_po_skeniranju
+                     or (uposteva_zastavico and kanal.oznacen_kot_nov))
         kanal.oznacen = False
     # Novi gredo na vrh, sicer bi jih iskali sredi tisocih starih.
     kanali.sort(key=lambda k: (not k.nov, k.ime.lower()))
     return kanali
+
+
+def filtriraj(kanali, samo_novi=False, samo_fta=False, iskanje=""):
+    """Kaj od vsega naj bo na zaslonu. Pogoji se sestevajo."""
+    iskanje = (iskanje or "").strip().lower()
+    izid = []
+    for kanal in kanali:
+        if samo_novi and not kanal.nov:
+            continue
+        if samo_fta and kanal.kodiran:
+            continue
+        if iskanje and iskanje not in kanal.ime.lower():
+            continue
+        izid.append(kanal)
+    return izid
 
 
 # --- seznam ----------------------------------------------------------------
@@ -135,6 +181,11 @@ class SeznamKanalov(MenuList):
                 size=(videz.S_LOCLJIVOST[1], visina), font=1, flags=levo,
                 text=kanal.locljivost, color=videz.BARVA_BLEDA,
                 color_sel=videz.BARVA_BLEDA),
+            MultiContentEntryText(
+                pos=(videz.S_KODIRAN[0], 0),
+                size=(videz.S_KODIRAN[1], visina), font=1, flags=levo,
+                text="CA" if kanal.kodiran else "",
+                color=videz.BARVA_KODIRAN, color_sel=videz.BARVA_KODIRAN),
             MultiContentEntryText(
                 pos=(videz.S_NOVO[0], 0), size=(videz.S_NOVO[1], visina),
                 font=1, flags=desno, text="[NEW]" if kanal.nov else "",
@@ -186,7 +237,7 @@ class OknoInfo(Screen):
 
     # Kratek povzetek gre ob picon, podrobnosti v dva stolpca. Pisava na
     # risiverju ni enakosirinska, zato stolpcev ne poravnavamo s presledki.
-    POVZETEK = ("Provider", "Type", "Resolution")
+    POVZETEK = ("Provider", "Type", "Resolution", "Encryption")
 
     def napolni(self):
         povzetek, oznake, vrednosti = [], [], []
@@ -226,6 +277,8 @@ class LastScannedAnalyzer(Screen):
         self.vsi = []
         self.prikazani = []
         self.samo_novi = False
+        self.samo_fta = False
+        self.iskanje = ""
         self.napaka = ""
 
         self["naslov"] = Label(NASLOV)
@@ -233,6 +286,7 @@ class LastScannedAnalyzer(Screen):
         self["g_ime"] = Label("CHANNEL")
         self["g_ponudnik"] = Label("PROVIDER")
         self["g_locljivost"] = Label("RESOLUTION")
+        self["g_kodiran"] = Label("CA")
         self["g_stanje"] = Label("STATE")
         self["podrobno"] = Label("")
         self["seznam"] = SeznamKanalov()
@@ -243,7 +297,8 @@ class LastScannedAnalyzer(Screen):
 
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions", "MenuActions",
-             "EPGSelectActions", "InfobarEPGActions", "DirectionActions"],
+             "EPGSelectActions", "InfobarEPGActions", "DirectionActions",
+             "NumberActions"],
             {
                 "ok": self.oznaci,
                 "cancel": self.close,
@@ -258,6 +313,8 @@ class LastScannedAnalyzer(Screen):
                 "down": self.dol,
                 "left": self.stran_gor,
                 "right": self.stran_dol,
+                "1": self.preklopi_fta,
+                "2": self.poisci,
             }, -1)
 
         self.onLayoutFinish.append(self.nalozi)
@@ -276,28 +333,41 @@ class LastScannedAnalyzer(Screen):
         self.osvezi(kazalo)
 
     def osvezi(self, kazalo=0):
-        self.prikazani = [k for k in self.vsi if k.nov] if self.samo_novi \
-            else list(self.vsi)
+        self.prikazani = filtriraj(self.vsi, self.samo_novi, self.samo_fta,
+                                   self.iskanje)
         self["seznam"].postavi(self.prikazani)
         if self.prikazani:
             self["seznam"].moveToIndex(min(kazalo, len(self.prikazani) - 1))
         self.osvezi_stanje()
 
+    def opis_filtra(self):
+        deli = []
+        if self.samo_novi:
+            deli.append("NEW")
+        if self.samo_fta:
+            deli.append("free")
+        if self.iskanje:
+            deli.append('"%s"' % self.iskanje)
+        return " + ".join(deli) if deli else "all"
+
     def osvezi_stanje(self):
         novih = sum(1 for k in self.vsi if k.nov)
+        prostih = sum(1 for k in self.vsi if not k.kodiran)
         oznacenih = sum(1 for k in self.vsi if k.oznacen)
         self["stanje"].setText(
-            "Total: %d    NEW: %d    Marked: %d    Filter: %s"
-            % (len(self.vsi), novih, oznacenih,
-               "NEW only" if self.samo_novi else "all"))
+            "Total: %d   NEW: %d   Free: %d   Marked: %d   Shown: %d (%s)"
+            % (len(self.vsi), novih, prostih, oznacenih,
+               len(self.prikazani), self.opis_filtra()))
         kanal = self["seznam"].trenutni()
         if not kanal:
-            self["podrobno"].setText(self.napaka)
+            self["podrobno"].setText(
+                self.napaka or "1 = free only    2 = search    MENU = more")
             return
         tp = kanal.transponder
         self["podrobno"].setText(
-            "%s   %s" % (kanal.ref,
-                         tp.satelit() if tp else "no transponder data"))
+            "%s   %s   %s" % (kanal.ref,
+                              tp.satelit() if tp else "no transponder data",
+                              kanal.kodiranje))
 
     # --- premikanje ---
     def gor(self):
@@ -334,6 +404,29 @@ class LastScannedAnalyzer(Screen):
                                    else "Only NEW")
         self.osvezi()
 
+    # --- tipka 1: samo prosti kanali ---
+    def preklopi_fta(self):
+        self.samo_fta = not self.samo_fta
+        self.osvezi()
+
+    # --- tipka 2: iskanje po imenu ---
+    def poisci(self):
+        self.session.openWithCallback(
+            self._iskano, VirtualKeyBoard, title="Search channel name",
+            text=self.iskanje)
+
+    def _iskano(self, besedilo):
+        # Preklic vrne None in takrat iskanja ne spreminjamo, prazen vpis
+        # pa ga pobrise.
+        if besedilo is None:
+            return
+        self.iskanje = besedilo.strip()
+        self.osvezi()
+
+    def pocisti_iskanje(self):
+        self.iskanje = ""
+        self.osvezi()
+
     # --- INFO ---
     def podrobnosti(self):
         kanal = self["seznam"].trenutni()
@@ -344,7 +437,11 @@ class LastScannedAnalyzer(Screen):
     def meni(self):
         self.session.openWithCallback(
             self._meni_izbran, ChoiceBox, title="Options",
-            list=[("Scan Channels", "scan"),
+            list=[("Show all channels" if self.samo_fta
+                   else "Show only free (FTA) channels", "fta"),
+                  ("Search by name", "search"),
+                  ("Clear search", "nosearch"),
+                  ("Scan Channels", "scan"),
                   ("Check for Updates", "update"),
                   ("Mark all NEW channels", "mark"),
                   ("Clear all marks", "clear"),
@@ -353,7 +450,9 @@ class LastScannedAnalyzer(Screen):
     def _meni_izbran(self, izbira):
         if not izbira:
             return
-        {"scan": self.skeniraj, "update": self.posodobi,
+        {"fta": self.preklopi_fta, "search": self.poisci,
+         "nosearch": self.pocisti_iskanje,
+         "scan": self.skeniraj, "update": self.posodobi,
          "mark": self.oznaci_vse, "clear": self.pocisti_oznake,
          "reset": self.pozabi_stanje}[izbira[1]]()
 
@@ -430,8 +529,13 @@ class LastScannedAnalyzer(Screen):
 
     # --- MODRI gumb: prenos v buket ---
     def _za_prenos(self):
+        """Oznaceni kanali, sicer vsi novi med prikazanimi.
+
+        Da filtri niso past: kdor gleda samo proste kanale, ne pricakuje,
+        da mu bo modri gumb v buket stlacil se kodirane.
+        """
         oznaceni = [k for k in self.vsi if k.oznacen]
-        return oznaceni if oznaceni else [k for k in self.vsi if k.nov]
+        return oznaceni if oznaceni else [k for k in self.prikazani if k.nov]
 
     def v_buket(self):
         izbrani = self._za_prenos()

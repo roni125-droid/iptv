@@ -97,7 +97,7 @@ sprejemnik o njih ne ve ničesar in jih morate pozneje odstraniti ročno.
 sprejemnik nameša vse svoje vtičnike.
 
 1. **Prenesite paket.** V repozitoriju odprite
-   `plugins/LastScannedAnalyzer/enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk`
+   `plugins/LastScannedAnalyzer/enigma2-plugin-extensions-lastscannedanalyzer_1.1_all.ipk`
    in kliknite `Download raw file`.
 
 2. **Spravite ga na sprejemnik**, na en od dveh načinov:
@@ -105,14 +105,14 @@ sprejemnik nameša vse svoje vtičnike.
    - na USB ključek, ki ga priklopite na sprejemnik (pristane v
      `/media/usb`),
    - ali prek omrežja:
-     `scp enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk root@192.168.1.25:/tmp/`
+     `scp enigma2-plugin-extensions-lastscannedanalyzer_1.1_all.ipk root@192.168.1.25:/tmp/`
 
 3. **Namestite ga.**
 
    Prek SSH:
 
    ```bash
-   opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer_1.0_all.ipk
+   opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer_1.1_all.ipk
    ```
 
    Brez računalnika, kar na sprejemniku: poiščite postavko za namestitev
@@ -207,14 +207,14 @@ ki jih nova nima več, po nesreči vgnezdene kopije in ostanki v `/tmp`.
 Zanje je drugi paket:
 
 ```
-enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk
+enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.1_all.ipk
 ```
 
 Namestite ga enako kot prvega:
 
 ```bash
-scp enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk root@192.168.1.25:/tmp/
-ssh root@192.168.1.25 "opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk"
+scp enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.1_all.ipk root@192.168.1.25:/tmp/
+ssh root@192.168.1.25 "opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.1_all.ipk"
 ```
 
 Delo opravi takoj ob namestitvi in sproti izpiše, kaj je odstranil:
@@ -286,21 +286,31 @@ Slika za nekaj sekund ugasne in se vrne. To je normalno.
    novih in koliko ste jih označili:
 
    ```
-   Total: 1243    NEW: 38    Marked: 0    Filter: all
+   Total: 1243   NEW: 38   Free: 211   Marked: 0   Shown: 1243 (all)
    ```
 
    Novi kanali so zeleni, z oznako `[NEW]` na desni, in so **na vrhu
-   seznama**.
+   seznama**. Kodirani imajo v stolpcu `CA` oranžno oznako.
 
 4. **Pritisnite RUMENI gumb.** Stari kanali izginejo, ostanejo samo novi.
    Ponovni pritisk spet pokaže vse.
+
+   **Pritisnite še tipko 1.** Izginejo kodirani kanali, ki jih brez kartice
+   ne morete gledati. Po skeniranju satelita je teh navadno velika večina,
+   zato se seznam tu najbolj skrajša. Ponovni pritisk jih spet pokaže.
+
+   Če veste, kaj iščete, **tipka 2** odpre tipkovnico na zaslonu in seznam
+   omeji na kanale s to besedo v imenu. Filtri se seštevajo, kaj je
+   vklopljeno, pa piše na koncu zgornje vrstice, na primer
+   `Shown: 6 (NEW + free + "hrt")`.
 
 5. **Označite, kar hočete obdržati.** Z **ZELENIM** gumbom, oznaka je
    `[ * ]`. Kazalec se po označitvi sam premakne navzdol, zato gre hitro.
    Če hočete vse nove naenkrat: **MENU** → `Mark all NEW channels`.
 
-   Če ne označite ničesar, modri gumb vzame **vse** kanale z oznako
-   `[NEW]`.
+   Če ne označite ničesar, modri gumb vzame vse kanale z oznako `[NEW]`
+   **med tistimi, ki so trenutno na zaslonu**. Filter torej ni past: kdor
+   gleda samo proste kanale, ne dobi v buket še kodiranih.
 
 6. **Pritisnite MODRI gumb.** Odpre se seznam vaših buketov, na dnu pa
    `+ Create New Bouquet`.
@@ -327,9 +337,11 @@ polarizacijo, hitrost simbolov, FEC, sistem in ločljivost.
 | ZELENI | označi / odznači kanal (`[ * ]`) |
 | RUMENI | samo `[NEW]` ↔ vsi kanali |
 | MODRI | prenos v buket |
-| MENU | skeniranje, posodobitve, označi vse / počisti oznake |
+| MENU | filtri, iskanje, skeniranje, posodobitve, označi vse / počisti |
 | INFO | podatki o kanalu in transponderju |
 | OK | enako kot zeleni gumb |
+| **1** | samo prosti (FTA) kanali ↔ vsi kanali |
+| **2** | iskanje po imenu kanala |
 | gor / dol | premik po seznamu |
 | levo / desno | stran gor / stran dol |
 
@@ -345,10 +357,22 @@ tega:
 
 1. ni v nobenem buketu — to je običajen primer po skeniranju,
 2. ob zadnjem zagonu plugina ga v bazi še ni bilo — to ujame kanal, ki ga
-   je Enigma sama dodala v buket, pa je vseeno nov.
+   je Enigma sama dodala v buket, pa je vseeno nov,
+3. Enigma sama ga je ob skeniranju označila z zastavico `dxNewFound`
+   (`f:40` v bazi) — edini znak, ki deluje tudi ob prvem zagonu.
 
-Ob prvem zagonu velja samo prvo pravilo. Drugače bi bili novi čisto vsi
-kanali v bazi, kar ne bi povedalo ničesar.
+Tretjega pravila plugin ne uporablja slepo. Nekatere slike zastavice nikoli
+ne počistijo in jo potem nosi domala vsa baza; če je označenih več kot 80
+odstotkov kanalov, jo zanemari in ostane pri prvih dveh pravilih.
+
+Brez tretjega pravila ob prvem zagonu velja samo prvo. Drugače bi bili novi
+čisto vsi kanali v bazi, kar ne bi povedalo ničesar.
+
+**Kako ve, kaj je kodirano.** Pri vsakem kanalu bere zapise `C:` s šiframi
+CAID. Te se zapišejo ob skeniranju oziroma ob prvem odprtju kanala, zato
+oznaka `CA` pomeni zagotovo kodiran, njena odsotnost pa najverjetneje
+prost. Kakšen kodiran kanal se zna prikrasti med proste, nasprotno pa se ne
+zgodi.
 
 **Kje si zapomni stanje.** V `/etc/enigma2/lastscanned_analyzer.json`.
 Zapiše se ob prvem zagonu in po vsakem prenosu v buket, **ne** ob vsakem
@@ -378,6 +402,8 @@ kar je isto, kar naredi Enigma sama, ko bukete urejate v njenem meniju.
 | `Could not read the channel database` | Baza ni na običajnem mestu ali je prazna. Preverite, da datoteka `/etc/enigma2/lamedb` obstaja in da ste že kdaj skenirali. |
 | Vsi kanali so `[NEW]` | To je normalno ob prvem zagonu, če noben kanal ni v buketu. Prenesite jih v buket in oznake izginejo. |
 | Noben kanal ni `[NEW]`, čeprav ste pravkar skenirali | Enigma je nove kanale sama razvrstila v bukete, plugin pa še ni imel posnetka baze od prej, s katerim bi jih primerjal. Navada, ki to prepreči: plugin enkrat odprite **pred** skeniranjem. Takrat si zapiše stanje baze in po skeniranju zna pokazati razliko. |
+| Med prostimi je kakšen kodiran | Šifre kodiranja se zapišejo šele ob skeniranju ali prvem odprtju kanala. Odprite ga enkrat in po naslednjem zagonu plugina bo označen z `CA`. |
+| Tipki 1 in 2 ne naredita nič | Nekateri daljinci številk ne pošiljajo v vse zaslone. Isto dobite prek `MENU`, kjer sta postavki `Show only free (FTA) channels` in `Search by name`. |
 | Gumb INFO ne naredi nič | Nekatere slike tipko INFO vežejo drugače. Vse drugo deluje; za označevanje uporabite OK ali zeleni gumb. |
 | Buket je pokvarjen | Prek SSH vrnite kopijo: `cp /etc/enigma2/userbouquet.moj.tv.lsa-bak /etc/enigma2/userbouquet.moj.tv`, nato ponovni zagon vmesnika. |
 | `Check for Updates` javi, da vir ni nastavljen | Tako je prav. V `update.py` spremenljivka `VIR` je prazna, dokler vanjo ne vpišete naslova do `version.json`. |
