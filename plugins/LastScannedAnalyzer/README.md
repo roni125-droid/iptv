@@ -25,6 +25,14 @@ Tako je plugin zaveden med nameščeno programsko opremo in ga odstranite z
 spremembi kode zgradite znova z `python3 naredi-ipk.py` (potrebuje samo
 Python, `--preveri` ga po gradnji še razpakira in izpiše vsebino).
 
+Če ste plugin kdaj kopirali ročno, ostanke počisti drugi paket,
+`...-cistilec_1.0_all.ipk`. Ob namestitvi pogleda, ali je plugin zaveden v
+`opkg`: če je, pobriše samo prevedene datoteke, ostanke starejših različic
+in kopije na napačnih mestih, sicer pa celotno mapo, ker je vsa skupaj
+ostanek ročne namestitve. Pravilno nameščenega plugina torej ne odnese s
+seboj. Podrobneje v
+[NAVODILA.md](NAVODILA.md#čiščenje-starih-datotek).
+
 Brez paketa, s kopiranjem datotek:
 
 ```bash

@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Zgradi paket .ipk za namestitev z opkg.
+"""Zgradi paketa .ipk za namestitev z opkg.
+
+Nastaneta dva paketa:
+
+    ..._all.ipk            plugin sam
+    ...-cistilec_all.ipk   pocisti ostanke starejsih, rocno prekopiranih
+                           namestitev; pravilno namescenega plugina se ne
+                           dotakne
 
 Uporaba:
-    python3 naredi-ipk.py                 # paket nastane v tej mapi
-    python3 naredi-ipk.py --out /tmp      # paket nastane drugje
-    python3 naredi-ipk.py --preveri       # paket zgradi in ga razpakira nazaj
+    python3 naredi-ipk.py                 # oba paketa v to mapo
+    python3 naredi-ipk.py --kaj plugin    # samo plugin
+    python3 naredi-ipk.py --kaj cistilec  # samo cistilec
+    python3 naredi-ipk.py --out /tmp      # paketa nastaneta drugje
+    python3 naredi-ipk.py --preveri       # po gradnji ju razpakira nazaj
 
 Zakaj lastna skripta in ne opkg-build:
     Paket .ipk je arhiv "ar" s tremi clanicami: debian-binary, control.tar.gz
@@ -67,7 +76,99 @@ echo "/etc/enigma2/lastscanned_analyzer.json, brisete ga rocno."
 exit 0
 """ % {"cilj": CILJ}
 
+CISTILEC = PAKET + "-cistilec"
+OPOMBA = "/usr/share/lastscanned-analyzer/cistilec.txt"
+
 CAS = 0                      # stalen cas, da je paket ponovljiv
+
+OPIS_CISTILCA = """Pocisti ostanke starih namestitev LastScanned Analyzerja.
+ Rocno prekopiranih datotek opkg ne vodi, zato ostanejo tudi po namestitvi
+ paketa. Ta paket jih odstrani: prevedene datoteke, napacno vgnezdene ali
+ napacno pisane kopije in ostanke v /tmp. Ce je plugin namescen prek opkg,
+ pusti njegove datoteke pri miru."""
+
+# Skript tece ob namestitvi cistilca. Kaj brise, je odvisno od tega, ali je
+# plugin namescen prek opkg. Ce je, so njegove datoteke svete in gredo samo
+# tuji ostanki; ce ni, je vse v mapi rocna kopija in gre cela.
+POSTINST_CISTILCA = """#!/bin/sh
+PLUGIN=%(cilj)s
+PAKET=%(paket)s
+EXT=$(dirname "$PLUGIN")
+
+lastnik=ne
+for mapa in /usr/lib/opkg/info /var/lib/opkg/info /usr/lib/ipkg/info; do
+    if [ -f "$mapa/$PAKET.list" ]; then
+        lastnik=da
+    fi
+done
+
+stevilo=0
+odstrani() {
+    if [ -e "$1" ]; then
+        rm -rf "$1"
+        echo "  odstranjeno: $1"
+        stevilo=$((stevilo + 1))
+    fi
+}
+
+echo ""
+echo "LastScanned Analyzer - ciscenje starih datotek"
+if [ "$lastnik" = da ]; then
+    echo "Plugin je namescen prek opkg, zato se njegovih datotek ne dotikam."
+else
+    echo "Plugina opkg ne vodi, kar pomeni rocno prekopirane datoteke."
+fi
+echo ""
+
+# 1. prevedene datoteke, ki znajo prekriti novo kodo
+odstrani "$PLUGIN/__pycache__"
+for koncnica in pyc pyo; do
+    for datoteka in "$PLUGIN"/*.$koncnica; do
+        odstrani "$datoteka"
+    done
+done
+
+# 2. kopije na napacnem mestu ali z napacnim imenom
+odstrani "$PLUGIN/LastScannedAnalyzer"
+odstrani "$EXT/lastscannedanalyzer"
+odstrani "$EXT/LastScanned_Analyzer"
+odstrani "$EXT/LastScannedAnalyser"
+odstrani "/tmp/LastScannedAnalyzer"
+
+# 3. sama mapa plugina
+if [ "$lastnik" = da ]; then
+    # Pustimo datoteke tekoce razlicice, vse drugo je ostanek.
+    if [ -d "$PLUGIN" ]; then
+        for datoteka in "$PLUGIN"/*; do
+            [ -e "$datoteka" ] || continue
+            case "${datoteka##*/}" in
+                %(znane)s) ;;
+                *) odstrani "$datoteka" ;;
+            esac
+        done
+    fi
+else
+    odstrani "$PLUGIN"
+fi
+
+echo ""
+if [ "$stevilo" = 0 ]; then
+    echo "Ni bilo kaj pocistiti, vse je bilo ze v redu."
+else
+    echo "Pocistil sem $stevilo stvari."
+    echo "Ponovno zazenite vmesnik:  init 4 && sleep 3 && init 3"
+fi
+echo ""
+echo "Shranjeno stanje /etc/enigma2/lastscanned_analyzer.json ostaja"
+echo "nedotaknjeno, brisete ga rocno, ce ga ne potrebujete vec."
+echo ""
+exit 0
+"""
+
+POSTRM_CISTILCA = """#!/bin/sh
+rm -rf %(opomba_mapa)s 2>/dev/null
+exit 0
+"""
 
 
 # --- razlicica -------------------------------------------------------------
@@ -147,6 +248,59 @@ def _ar(clani):
     return b"".join(izid)
 
 
+def _nadzor(paket, oznaka, opis, velikost):
+    return (
+        "Package: %s\n"
+        "Version: %s\n"
+        "Architecture: %s\n"
+        "Maintainer: %s\n"
+        "Section: multimedia\n"
+        "Priority: optional\n"
+        "Installed-Size: %d\n"
+        "Description: %s\n"
+    ) % (paket, oznaka, ARHITEKTURA, VZDRZEVALEC, velikost, opis)
+
+
+def _zapisi(izhodna_mapa, paket, oznaka, control, data):
+    arhiv = _ar([
+        ("debian-binary", b"2.0\n"),
+        ("control.tar.gz", control),
+        ("data.tar.gz", data),
+    ])
+    pot = os.path.join(izhodna_mapa,
+                       "%s_%s_%s.ipk" % (paket, oznaka, ARHITEKTURA))
+    with open(pot, "wb") as fh:
+        fh.write(arhiv)
+    return pot, len(arhiv)
+
+
+def zgradi_cistilec(izhodna_mapa):
+    """Paket, ki ob namestitvi pocisti ostanke starih namestitev."""
+    oznaka = razlicica()
+    postinst = POSTINST_CISTILCA % {
+        "cilj": CILJ, "paket": PAKET, "znane": "|".join(VSEBINA)}
+    postrm = POSTRM_CISTILCA % {"opomba_mapa": os.path.dirname(OPOMBA)}
+
+    opomba = (
+        "LastScanned Analyzer - cistilec %s\n\n"
+        "Delo je opravil skript postinst ob namestitvi tega paketa.\n"
+        "Paket sam ne vsebuje plugina in ga lahko odstranite z\n"
+        "    opkg remove %s\n" % (oznaka, CISTILEC)
+    ).encode("utf-8")
+    data = _tar_gz([("." + OPOMBA, opomba, 0o644)])
+
+    control = _tar_gz([
+        ("./control", _nadzor(CISTILEC, oznaka, OPIS_CISTILCA,
+                              len(opomba)).encode("utf-8"), 0o644),
+        ("./postinst", postinst.encode("utf-8"), 0o755),
+        ("./postrm", postrm.encode("utf-8"), 0o755),
+    ])
+
+    pot, velikost = _zapisi(izhodna_mapa, CISTILEC, oznaka, control, data)
+    print("zgrajeno: %s (%d bajtov, cistilec)" % (pot, velikost))
+    return pot
+
+
 def zgradi(izhodna_mapa):
     oznaka = razlicica()
     preveri_version_json(oznaka)
@@ -163,35 +317,17 @@ def zgradi(izhodna_mapa):
     data = _tar_gz(podatki)
 
     # control.tar.gz - opis paketa in skripti ob namestitvi
-    nadzor = (
-        "Package: %s\n"
-        "Version: %s\n"
-        "Architecture: %s\n"
-        "Maintainer: %s\n"
-        "Section: multimedia\n"
-        "Priority: optional\n"
-        "Installed-Size: %d\n"
-        "Description: %s\n"
-    ) % (PAKET, oznaka, ARHITEKTURA, VZDRZEVALEC,
-         sum(len(v) for _, v, _ in podatki), OPIS)
+    nadzor = _nadzor(PAKET, oznaka, OPIS,
+                     sum(len(v) for _, v, _ in podatki))
     control = _tar_gz([
         ("./control", nadzor.encode("utf-8"), 0o644),
         ("./postinst", POSTINST.encode("utf-8"), 0o755),
         ("./postrm", POSTRM.encode("utf-8"), 0o755),
     ])
 
-    paket = _ar([
-        ("debian-binary", b"2.0\n"),
-        ("control.tar.gz", control),
-        ("data.tar.gz", data),
-    ])
-
-    ime = "%s_%s_%s.ipk" % (PAKET, oznaka, ARHITEKTURA)
-    pot = os.path.join(izhodna_mapa, ime)
-    with open(pot, "wb") as fh:
-        fh.write(paket)
+    pot, velikost = _zapisi(izhodna_mapa, PAKET, oznaka, control, data)
     print("zgrajeno: %s (%d bajtov, %d datotek)"
-          % (pot, len(paket), len(podatki)))
+          % (pot, velikost, len(podatki)))
     return pot
 
 
@@ -217,7 +353,8 @@ def razberi_ar(pot):
     return clani
 
 
-def preveri(pot):
+def preveri(pot, plugin=True):
+    """Razpakiraj paket nazaj in preveri, da je v njem, kar mora biti."""
     clani = razberi_ar(pot)
     imena = [ime for ime, _ in clani]
     print("\nclanice arhiva: %s" % ", ".join(imena))
@@ -248,13 +385,21 @@ def preveri(pot):
                     if t.getmember(skript).mode & 0o111 == 0:
                         print("NAPAKA: %s ni izvrsljiv" % skript)
                         napake += 1
-            else:
+            elif plugin:
                 poti = [c.name for c in t.getmembers() if c.isfile()]
                 manjka = [i for i in VSEBINA
                           if ("." + CILJ + "/" + i) not in poti]
                 if manjka:
                     print("NAPAKA: v paketu manjka %s" % ", ".join(manjka))
                     napake += 1
+            else:
+                # Cistilec ne sme prinesti plugina s sabo, saj bi ga pri
+                # odstranitvi odnesel s seboj.
+                for clan in t.getmembers():
+                    if CILJ in clan.name:
+                        print("NAPAKA: cistilec nosi datoteko plugina (%s)"
+                              % clan.name)
+                        napake += 1
 
     print("\n%s" % ("preverjanje je uspelo" if not napake
                     else "napak: %d" % napake))
@@ -262,14 +407,25 @@ def preveri(pot):
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out", default=MAPA, help="kam naj zapisem paket")
+    ap = argparse.ArgumentParser(
+        description="Zgradi paketa .ipk (plugin in cistilec).")
+    ap.add_argument("--out", default=MAPA, help="kam naj zapisem paketa")
+    ap.add_argument("--kaj", choices=("oba", "plugin", "cistilec"),
+                    default="oba", help="kateri paket naj zgradim")
     ap.add_argument("--preveri", action="store_true",
                     help="paket po gradnji razpakiraj in izpisi vsebino")
     args = ap.parse_args()
 
-    pot = zgradi(args.out)
-    return preveri(pot) if args.preveri else 0
+    napake = 0
+    if args.kaj in ("oba", "plugin"):
+        pot = zgradi(args.out)
+        if args.preveri:
+            napake += preveri(pot, plugin=True)
+    if args.kaj in ("oba", "cistilec"):
+        pot = zgradi_cistilec(args.out)
+        if args.preveri:
+            napake += preveri(pot, plugin=False)
+    return 1 if napake else 0
 
 
 if __name__ == "__main__":

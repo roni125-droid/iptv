@@ -11,6 +11,7 @@ domače, poglavje preprosto preskočite.
   - [Pot B: z USB ključkom](#pot-b-z-usb-ključkom-brez-računalniških-orodij)
   - [Pot C: prek omrežja (WinSCP)](#pot-c-prek-omrežja-winscp-windows)
   - [Pot D: prek omrežja (ukazna vrstica)](#pot-d-prek-omrežja-ukazna-vrstica)
+  - [Čiščenje starih datotek](#čiščenje-starih-datotek)
 - [3. korak: ponovni zagon vmesnika](#3-korak-ponovni-zagon-vmesnika)
 - [4. korak: prva uporaba](#4-korak-prva-uporaba)
 - [Kako plugin dela od znotraj](#kako-plugin-dela-od-znotraj)
@@ -86,6 +87,9 @@ Izberite eno od štirih poti.
 
 Poti B, C in D datoteke samo prekopirajo. Delujejo enako dobro, le da
 sprejemnik o njih ne ve ničesar in jih morate pozneje odstraniti ročno.
+
+Če ste plugin po eni od teh poti nameščali že prej, si oglejte še
+[Čiščenje starih datotek](#čiščenje-starih-datotek) na koncu tega koraka.
 
 ### Pot A: paket .ipk (priporočeno)
 
@@ -192,6 +196,65 @@ ssh root@192.168.1.25 "sh /tmp/LastScannedAnalyzer/namesti.sh"
 Naslov `192.168.1.25` zamenjajte s svojim. Skripta `namesti.sh` datoteke
 prekopira na pravo mesto, pobriše morebitne stare prevedene datoteke in na
 koncu izpiše, kako zagnati vmesnik na novo.
+
+### Čiščenje starih datotek
+
+To potrebujete samo, če ste plugin kdaj že kopirali ročno. Takih datotek
+`opkg` ne vodi, zato po namestitvi paketa ostanejo ležati naokrog:
+prevedene datoteke `.pyc`, mapa `__pycache__`, datoteke starejših različic,
+ki jih nova nima več, po nesreči vgnezdene kopije in ostanki v `/tmp`.
+
+Zanje je drugi paket:
+
+```
+enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk
+```
+
+Namestite ga enako kot prvega:
+
+```bash
+scp enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk root@192.168.1.25:/tmp/
+ssh root@192.168.1.25 "opkg install /tmp/enigma2-plugin-extensions-lastscannedanalyzer-cistilec_1.0_all.ipk"
+```
+
+Delo opravi takoj ob namestitvi in sproti izpiše, kaj je odstranil:
+
+```
+LastScanned Analyzer - ciscenje starih datotek
+Plugin je namescen prek opkg, zato se njegovih datotek ne dotikam.
+
+  odstranjeno: .../LastScannedAnalyzer/__pycache__
+  odstranjeno: .../LastScannedAnalyzer/plugin.pyc
+  odstranjeno: .../LastScannedAnalyzer/stara-datoteka.py
+  odstranjeno: /tmp/LastScannedAnalyzer
+
+Pocistil sem 4 stvari.
+```
+
+**Kaj pobriše, je odvisno od tega, kako je plugin nameščen.** Paket to
+preveri sam, v seznamu nameščene programske opreme:
+
+| Stanje | Kaj naredi |
+| --- | --- |
+| Plugin je nameščen prek `opkg` | Pusti njegove datoteke pri miru. Odstrani samo prevedene datoteke, ostanke starejših različic in kopije na napačnih mestih. |
+| Plugina `opkg` ne vodi (ročna kopija) | Odstrani celotno mapo plugina, ker je vsa skupaj ostanek ročne namestitve. |
+
+Zato je vseeno, v katerem vrstnem redu ga poženete. Najbolj čisto je
+takole: najprej čistilec (pobriše staro ročno kopijo), nato paket s
+pluginom (namesti novo, o kateri sprejemnik ve).
+
+Čistilec **ni** odstranjevalnik plugina. Pravilno nameščenega plugina se
+namenoma ne dotakne; za odstranitev je `opkg remove`, kot piše v
+[zadnjem poglavju](#kako-ga-odstranim).
+
+Shranjenega stanja (`/etc/enigma2/lastscanned_analyzer.json`) ne briše, da
+oznake `[NEW]` ostanejo take, kot so bile.
+
+Ko konča, ga lahko odstranite, saj je svoje opravil:
+
+```bash
+opkg remove enigma2-plugin-extensions-lastscannedanalyzer-cistilec
+```
 
 ## 3. korak: ponovni zagon vmesnika
 
