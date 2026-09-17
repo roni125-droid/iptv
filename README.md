@@ -280,6 +280,14 @@ ponedeljek in spremembe sam objavi. Veja `claude/playlist-ex-yu-iptv-m2u6ya` je
 že nastavljena kot privzeta, zato časovnik teče brez dodatnega posega. Predčasno
 ga zaženete z gumbom *Run workflow* v zavihku *Actions*.
 
+## Plugin za Enigma2
+
+V mapi [`plugins/LastScannedAnalyzer`](plugins/LastScannedAnalyzer) je
+ločeno orodje, ki s to playlisto nima opravka: plugin za satelitske
+sprejemnike Enigma2. Po skeniranju pokaže, kateri kanali so novi, in jih z
+modrim gumbom prenese v buket, tudi v na novo ustvarjenega. Navodila so v
+[njegovem README](plugins/LastScannedAnalyzer/README.md).
+
 ## Viri podatkov
 
 Naslovi pretokov in logotipi izvirajo iz javnih zbirk

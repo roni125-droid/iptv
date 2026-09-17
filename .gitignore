@@ -1,1 +1,3 @@
 za-bokse/
+__pycache__/
+*.pyc
