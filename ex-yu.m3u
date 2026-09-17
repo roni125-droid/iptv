@@ -72,7 +72,7 @@ http://ott.sgn.net/hls/tvurslja.m3u8
 #EXTINF:-1 tvg-id="TrzicTV.si@SD" tvg-logo="https://i.imgur.com/VZiaoqz.png" group-title="Slovenija - obcasni",Trzic TV [1080p, ni 24/7]
 https://vpn.video2go.live:444/trzic/tv/playlist.m3u8
 #EXTINF:-1 tvg-id="Klasik.hr@SD" tvg-logo="https://i.imgur.com/C90BYlb.png" group-title="Hrvaška - obcasni",Klasik [576p, ni 24/7]
-https://178.253.194.105/klasiktv/playlist.m3u8
+https://vod1.laki.eu/klasiktv/playlist.m3u8
 #EXTINF:-1 tvg-id="OTV.hr@SD" tvg-logo="https://i.imgur.com/67zVdu2.png" group-title="Hrvaška - obcasni",OTV [720p, ni 24/7]
 https://stream.agatin.hr:3559/live/otvlive.m3u8
 #EXTINF:-1 tvg-id="RadioTelevizijaBanovina.hr@SD" tvg-logo="https://i.imgur.com/gCFgC5D.png" group-title="Hrvaška - obcasni",Radio Televizija Banovina [1080p, ni 24/7]

@@ -74,6 +74,16 @@ NAME_DENY_RE = re.compile(
 
 TVG_ID_RE = re.compile(r'tvg-id="([^"]*)"')
 
+# Rocni popravki naslovov, kjer baza nosi naslov, ki ga sodobni predvajalnik
+# zavrne. Kljuc je naslov iz baze, vrednost pa popravljeni naslov.
+URL_FIXES = {
+    # Klasik oddaja z golega naslova IP, potrdilo Let's Encrypt na tem
+    # strezniku pa se glasi na vod1.laki.eu. To je isti stroj, na katerem
+    # stoji TV Hram. Predvajalniki naslov IP zavrnejo, ime pa sprejmejo.
+    "https://178.253.194.105/klasiktv/playlist.m3u8":
+        "https://vod1.laki.eu/klasiktv/playlist.m3u8",
+}
+
 
 def fetch(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": "ex-yu-iptv-build"})
@@ -249,6 +259,7 @@ def build(cache: str | None, outdir: str) -> dict:
             n = len(ip_count.get(host_of(url), {None}))
             if country is None or not keep(tvg_id, title, url, ua, n):
                 continue
+            url = URL_FIXES.get(url, url)
             key = tvg_id or f"{country}:{clean_name(title).lower()}"
             cand = (quality_rank(title, url), country, tvg_id, title, url)
             if key not in best or cand[0] < best[key][0]:
