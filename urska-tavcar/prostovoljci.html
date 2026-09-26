@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta name="copyright" content="© 2026 Urška Tavčar. Vse pravice pridržane."/>
+<meta name="author" content="Urška Tavčar"/>
+<meta name="rights" content="Vsebina te strani je avtorsko zaščitena. Kopiranje brez pisnega dovoljenja ni dovoljeno."/>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
+<meta charset="utf-8"/>
+<title>Postanite prostovoljec — Urška Tavčar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="theme-color" content="#2E5D4E"/>
+<meta name="description" content="Prijava za prostovoljce v kampanji Urške Tavčar za županjo občine Mengeš."/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232E5D4E'/%3E%3Ctext x='50' y='54' font-family='Georgia,serif' font-size='48' fill='%23fff' text-anchor='middle' dominant-baseline='middle'%3EUT%3C/text%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --papir:#FDF9F4; --papir2:#F5EDE3;
+  --crnilo:#2B2622; --tih:#6A6058;
+  --med:#D9973C; --med-t:#9A6318;
+  --gozd:#2E5D4E; --gozd-d:#26493E; --gozd-s:#EAF1ED;
+  --linija:rgba(43,38,34,.13);
+  --linija-moč:rgba(43,38,34,.22);
+  --senca:0 1px 2px rgba(43,38,34,.05),0 8px 24px rgba(43,38,34,.06);
+  --fokus:0 0 0 3px rgba(217,151,60,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--papir);color:var(--crnilo);font-family:'Source Sans 3',system-ui,sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Bitter,Georgia,serif;line-height:1.18;letter-spacing:-.015em}
+a{color:var(--med-t);text-decoration:underline;text-underline-offset:2px}
+a:hover{color:var(--gozd)}
+.ovoj{max-width:860px;margin:0 auto;padding:0 24px}
+.nav{position:sticky;top:0;z-index:100;background:rgba(253,249,244,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--linija)}
+.nav .ovoj{max-width:1120px;display:flex;align-items:center;justify-content:space-between;padding-top:12px;padding-bottom:12px}
+.ime{font-family:Bitter,serif;font-weight:700;font-size:1.05rem;text-decoration:none;color:var(--crnilo);display:flex;align-items:center;gap:10px}
+.ime .znak{width:30px;height:30px;border-radius:9px;background:linear-gradient(140deg,var(--med),var(--gozd));display:grid;place-items:center;color:#fff;font-size:.78rem;font-weight:700}
+.nazaj{font-size:.92rem;font-weight:600;text-decoration:none;color:var(--tih);padding:8px 14px;border-radius:100px;border:1px solid var(--linija)}
+.nazaj:hover{background:var(--papir2);color:var(--crnilo)}
+.glava{padding:56px 0 22px;text-align:center}
+.glava h1{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:10px}
+.glava p{color:var(--tih);max-width:60ch;margin:0 auto}
+.obrazec{display:grid;gap:18px;max-width:640px;margin:36px auto 60px;background:var(--papir2);border:1px solid var(--linija);border-radius:16px;padding:36px 32px;box-shadow:var(--senca)}
+.polje-skupina{display:grid}
+.polje-label{display:block;font-size:.86rem;font-weight:600;color:var(--tih);margin-bottom:6px}
+.polje{width:100%;padding:12px 14px;border:1px solid var(--linija-moč);border-radius:11px;background:var(--papir);font-family:inherit;font-size:1rem;color:var(--crnilo);transition:border-color .15s,box-shadow .15s}
+.polje:focus{outline:none;border-color:var(--med);box-shadow:var(--fokus)}
+.polje-vrstica{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.polje-vrstica{grid-template-columns:1fr}}
+.polje-izbira{display:grid;gap:8px}
+.izbira{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;color:var(--crnilo);cursor:pointer;padding:10px 12px;border-radius:10px;border:1px solid var(--linija);background:var(--papir);transition:border-color .2s,background .2s}
+.izbira:hover{border-color:var(--linija-moč);background:#fff}
+.izbira input{margin-top:3px;accent-color:var(--gozd);flex-shrink:0}
+.gdpr{font-size:.84rem;color:var(--tih);line-height:1.55;display:flex;gap:8px;align-items:flex-start}
+.gdpr input{margin-top:4px;accent-color:var(--gozd)}
+.gdpr a{color:var(--med-t)}
+.poslji{justify-self:start;padding:14px 32px;border:0;border-radius:100px;background:var(--gozd);color:#fff;font-family:inherit;font-weight:600;font-size:1rem;cursor:pointer;transition:background .2s,transform .15s}
+.poslji:hover{background:var(--gozd-d);transform:translateY(-1px)}
+.status{font-size:.9rem;color:var(--gozd);font-weight:600;min-height:1.2em}
+.honeypot{position:absolute;left:-9999px;opacity:0;pointer-events:none}
+.noga{background:var(--crnilo);color:#D8D0C8;padding:36px 0;font-size:.88rem;margin-top:40px}
+.noga .ovoj{max-width:1120px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+.noga a{color:var(--med)}
+@media(max-width:600px){
+  body{font-size:16px}
+  .ovoj{padding:0 18px}
+  .glava{padding:36px 0 16px}
+  .nav .ovoj{gap:12px}
+  .ime{font-size:1rem}
+  .nazaj{padding:7px 12px;font-size:.88rem;white-space:nowrap}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  th,td{padding:9px 10px;min-width:90px}
+  .noga{padding:30px 0 calc(26px + env(safe-area-inset-bottom))}
+  .obrazec{padding:24px 18px;margin:24px auto 40px;border-radius:14px}
+  .poslji{justify-self:stretch}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="ovoj">
+    <a class="ime" href="index.html"><span class="znak" aria-hidden="true">UT</span> Urška Tavčar</a>
+    <a class="nazaj" href="index.html">← Nazaj na stran</a>
+  </div>
+</nav>
+
+<div class="ovoj">
+  <header class="glava">
+    <h1>Postanite prostovoljec</h1>
+    <p>Kampanja ne teče sama. Če lahko namenite uro ali dve na teden, izpolnite spodnji obrazec in stopili bomo v stik.</p>
+  </header>
+
+  <form class="obrazec" id="prostovoljci-obrazec" novalidate>
+    <div class="polje-vrstica">
+      <div class="polje-skupina">
+        <label class="polje-label" for="p-ime">Ime in priimek *</label>
+        <input class="polje" id="p-ime" name="ime" type="text" autocomplete="name" placeholder="npr. Ana Novak" required/>
+      </div>
+      <div class="polje-skupina">
+        <label class="polje-label" for="p-email">E-pošta *</label>
+        <input class="polje" id="p-email" name="email" type="email" autocomplete="email" placeholder="ime@primer.si" required/>
+      </div>
+    </div>
+
+    <div class="polje-skupina">
+      <label class="polje-label" for="p-telefon">Telefon (neobvezno)</label>
+      <input class="polje" id="p-telefon" name="telefon" type="tel" autocomplete="tel" placeholder="040 123 456"/>
+    </div>
+
+    <div class="polje-skupina">
+      <label class="polje-label">Kje želite pomagati? (izberite eno ali več)</label>
+      <div class="polje-izbira">
+        <label class="izbira"><input type="checkbox" name="podrocje" value="letaki"/> Razdeljevanje letakov po naseljih</label>
+        <label class="izbira"><input type="checkbox" name="podrocje" value="srecanja"/> Organizacija srečanj z občani</label>
+        <label class="izbira"><input type="checkbox" name="podrocje" value="social"/> Družbena omrežja in splet</label>
+        <label class="izbira"><input type="checkbox" name="podrocje" value="prevoz"/> Prevoz (imate avto)</label>
+        <label class="izbira"><input type="checkbox" name="podrocje" value="foto"/> Fotografija ali video</label>
+        <label class="izbira"><input type="checkbox" name="podrocje" value="dogodki"/> Priprava dogodkov</label>
+      </div>
+    </div>
+
+    <div class="polje-vrstica">
+      <div class="polje-skupina">
+        <label class="polje-label" for="p-cas">Koliko časa na teden lahko namenite?</label>
+        <select class="polje" id="p-cas" name="cas">
+          <option value="">— izberite —</option>
+          <option value="1-2">1–2 uri</option>
+          <option value="3-5">3–5 ur</option>
+          <option value="6-10">6–10 ur</option>
+          <option value="vec">Več kot 10 ur</option>
+        </select>
+      </div>
+      <div class="polje-skupina">
+        <label class="polje-label" for="p-kdaj">Kdaj ste na voljo?</label>
+        <select class="polje" id="p-kdaj" name="kdaj">
+          <option value="">— izberite —</option>
+          <option value="dopoldne">Dopoldne</option>
+          <option value="popoldne">Popoldne</option>
+          <option value="vecer">Zvečer</option>
+          <option value="vikend">Konec tedna</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="polje-skupina">
+      <label class="polje-label" for="p-spretnosti">Posebne spretnosti (neobvezno)</label>
+      <input class="polje" id="p-spretnosti" name="spretnosti" type="text" placeholder="npr. znanje jezikov, vozniski izpit, tehnične veščine"/>
+    </div>
+
+    <div class="polje-skupina">
+      <label class="polje-label" for="p-sporocilo">Dodatno sporočilo (neobvezno)</label>
+      <textarea class="polje" id="p-sporocilo" name="sporocilo" rows="4" placeholder="Karkoli želite dodati ..."></textarea>
+    </div>
+
+    <label class="gdpr" for="p-gdpr">
+      <input type="checkbox" id="p-gdpr" name="gdpr" required/>
+      <span>Strinjam se, da se moji podatki uporabijo za organizacijo prostovoljskega dela v kampanji. <a href="zasebnost.html">Politika zasebnosti</a>. *</span>
+    </label>
+
+    <div class="honeypot" aria-hidden="true">
+      <label for="p-website">Vaša spletna stran</label>
+      <input type="text" id="p-website" name="website" tabindex="-1" autocomplete="off"/>
+    </div>
+
+    <button class="poslji" type="submit">Prijavite se kot prostovoljec</button>
+    <p class="status" id="p-status" role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<footer class="noga">
+  <div class="ovoj">
+    <div>© <span id="leto"></span> Urška Tavčar · Kandidatka za županjo občine Mengeš</div>
+    <div><a href="index.html">Nazaj na predstavitveno stran</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var f = document.getElementById('prostovoljci-obrazec');
+  var s = document.getElementById('p-status');
+  if(f){
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(f.querySelector('#p-website').value){ s.textContent = 'Hvala!'; return; }
+      if(!f.checkValidity()){ s.style.color = '#A02626'; s.textContent = 'Prosimo, izpolnite vsa obvezna polja.'; return; }
+      s.style.color = ''; s.textContent = 'Hvala! (osnutek obrazca — prijava ni bila poslana.)'; f.reset();
+    });
+  }
+  document.getElementById('leto').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>

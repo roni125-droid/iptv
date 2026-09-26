@@ -1,259 +1,383 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="sl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Urška Tavčar</title>
-<meta name="description" content="Urška Tavčar – [kratek opis dejavnosti]">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<title>Urška Tavčar — kandidatka za županjo občine Mengeš</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="description" content="Osnutek predstavitvene strani za kandidatko za županjo občine Mengeš. Besedilo in fotografija sta začasna."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #faf7f2;
-    --surface: #ffffff;
-    --text: #1f1c19;
-    --muted: #6b645c;
-    --accent: #b5654a;
-    --accent-soft: #f3e4dc;
-    --line: #e8e1d8;
-    --radius: 18px;
-    --pad: 20px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #171513; --surface: #211e1b; --text: #f2ede7; --muted: #a8a097;
-      --accent: #e08f71; --accent-soft: #3a2a23; --line: #332e29;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #171513; --surface: #211e1b; --text: #f2ede7; --muted: #a8a097;
-    --accent: #e08f71; --accent-soft: #3a2a23; --line: #332e29;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  body {
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--bg); color: var(--text);
-    font-size: 16px; line-height: 1.6; overflow-x: hidden;
-  }
-  img { max-width: 100%; display: block; }
-  a { color: inherit; }
-  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 var(--pad); }
-  h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; line-height: 1.15; }
+:root{
+  --papir:#FDF9F4; --papir2:#F5EDE3; --papir3:#EFE4D6;
+  --crnilo:#2B2622; --tih:#6E645C;
+  --med:#D9973C; --med-t:#B87A24;
+  --gozd:#2E5D4E; --gozd-s:#EAF1ED;
+  --linija:rgba(43,38,34,.13);
+  --senca:0 1px 2px rgba(43,38,34,.05),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--papir);color:var(--crnilo);font-family:'Source Sans 3',system-ui,-apple-system,sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:Bitter,Georgia,serif;line-height:1.14;letter-spacing:-.015em;text-wrap:balance}
+a{color:inherit}
+img{max-width:100%}
+.ovoj{max-width:1120px;margin:0 auto;padding:0 24px}
+.oznaka{font-family:'Source Sans 3',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--med-t)}
+.tih{color:var(--tih)}
 
-  /* Navigacija */
-  header {
-    position: sticky; top: 0; z-index: 20;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
-  }
-  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { font-family: Fraunces, Georgia, serif; font-size: 1.25rem; font-weight: 600; text-decoration: none; }
-  .menu-btn {
-    width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 12px;
-    background: var(--surface); color: var(--text); cursor: pointer;
-    display: grid; place-items: center;
-  }
-  .menu-btn span, .menu-btn span::before, .menu-btn span::after {
-    content: ""; display: block; width: 18px; height: 2px; background: currentColor;
-    border-radius: 2px; position: relative; transition: transform .25s, opacity .25s;
-  }
-  .menu-btn span::before { position: absolute; top: -6px; }
-  .menu-btn span::after { position: absolute; top: 6px; }
-  .nav-open .menu-btn span { background: transparent; }
-  .nav-open .menu-btn span::before { transform: translateY(6px) rotate(45deg); }
-  .nav-open .menu-btn span::after { transform: translateY(-6px) rotate(-45deg); }
-  nav.links {
-    display: none; position: absolute; left: 0; right: 0; top: 64px;
-    background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px var(--pad) 20px;
-  }
-  .nav-open nav.links { display: block; }
-  nav.links a {
-    display: block; padding: 14px 0; font-size: 1.1rem; text-decoration: none;
-    border-bottom: 1px solid var(--line);
-  }
-  nav.links a:last-child { border-bottom: 0; }
+/* trak osnutka */
+.osnutek{background:var(--gozd);color:#EAF1ED;font-size:.82rem;text-align:center;padding:9px 16px;line-height:1.45}
+.osnutek b{color:#fff}
 
-  /* Uvod */
-  .hero { padding: 40px var(--pad) 48px; }
-  .hero-img {
-    aspect-ratio: 4 / 5; border-radius: var(--radius); margin-bottom: 28px;
-    background: linear-gradient(145deg, var(--accent-soft), var(--line));
-    display: grid; place-items: center; color: var(--muted); font-size: .9rem; text-align: center;
-    overflow: hidden;
-  }
-  .hero-img img { width: 100%; height: 100%; object-fit: cover; }
-  .eyebrow { color: var(--accent); font-weight: 600; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
-  .hero h1 { font-size: clamp(2.3rem, 9vw, 3.8rem); margin-bottom: 16px; }
-  .hero p.lead { color: var(--muted); font-size: 1.1rem; margin-bottom: 28px; }
-  .btns { display: flex; flex-direction: column; gap: 12px; }
-  .btn {
-    display: flex; align-items: center; justify-content: center; min-height: 52px;
-    padding: 0 24px; border-radius: 999px; font-weight: 600; text-decoration: none;
-    border: 1px solid var(--accent);
-  }
-  .btn.primary { background: var(--accent); color: #fff; }
-  .btn.ghost { color: var(--accent); }
+/* nav */
+.nav{position:sticky;top:0;z-index:60;background:rgba(253,249,244,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--linija)}
+.nav .ovoj{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:14px;padding-bottom:14px}
+.ime{font-family:Bitter,serif;font-weight:700;font-size:1.08rem;text-decoration:none;display:flex;align-items:center;gap:10px}
+.ime .znak{width:30px;height:30px;border-radius:9px;background:linear-gradient(140deg,var(--med),var(--gozd));display:grid;place-items:center;color:#fff;font-size:.82rem;font-weight:700;font-family:'Source Sans 3',sans-serif;letter-spacing:.02em}
+.povezave{display:flex;align-items:center;gap:24px;font-size:.95rem;font-weight:500}
+.povezave a{text-decoration:none;color:var(--tih)}
+.povezave a:hover{color:var(--crnilo)}
+.gumb{display:inline-block;padding:11px 22px;border-radius:100px;background:var(--gozd);color:#fff!important;font-weight:600;text-decoration:none;font-size:.95rem;border:1px solid var(--gozd)}
+.gumb:hover{background:#26493E}
+.gumb-o{background:transparent;color:var(--crnilo)!important;border:1px solid var(--linija)}
+.gumb-o:hover{background:var(--papir2)}
+@media(max-width:880px){.povezave a:not(.gumb){display:none}}
 
-  /* Sekcije */
-  section.block { padding: 56px 0; border-top: 1px solid var(--line); }
-  section.block h2 { font-size: clamp(1.8rem, 7vw, 2.6rem); margin-bottom: 16px; }
-  section.block > .wrap > p { color: var(--muted); max-width: 60ch; }
-  .cards { display: grid; gap: 14px; margin-top: 28px; }
-  .card {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 22px;
-  }
-  .card .num { color: var(--accent); font-weight: 600; font-size: .85rem; margin-bottom: 6px; }
-  .card h3 { font-size: 1.3rem; margin-bottom: 8px; }
-  .card p { color: var(--muted); font-size: .97rem; }
+/* hero */
+.hero{position:relative;background:
+  radial-gradient(1100px 480px at 78% -8%,rgba(217,151,60,.20),transparent 60%),
+  radial-gradient(760px 420px at 6% 104%,rgba(46,93,78,.13),transparent 62%),
+  var(--papir)}
+.hero .ovoj{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:center;padding-top:74px;padding-bottom:78px}
+.hero h1{font-size:clamp(2.35rem,5.1vw,3.75rem);margin:14px 0 18px}
+.hero h1 em{font-style:normal;color:var(--gozd)}
+.vodilo{font-size:1.14rem;color:var(--tih);max-width:44ch}
+.dejanja{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
 
-  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
-  .gallery div {
-    aspect-ratio: 1; border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent-soft), var(--line));
-    display: grid; place-items: center; color: var(--muted); font-size: .8rem;
-  }
-  .gallery div:first-child { grid-column: span 2; aspect-ratio: 16 / 10; }
+/* portret */
+.portret{position:relative}
+.okvir{position:relative;aspect-ratio:1600/1740;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,var(--papir3),var(--papir2));border:1px solid var(--linija);box-shadow:var(--senca)}
+.okvir svg{position:absolute;inset:0;width:100%;height:100%}
+.okvir img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0;transition:opacity .5s ease}
+.portret.imaslika .okvir img{opacity:1}
+.portret.imaslika .okvir svg,
+.portret.imaslika .okvir .napis,
+.portret.imaslika .podpis{display:none}
+.portret.imaslika .okvir{background:#fff;border:1px solid rgba(43,38,34,.20);box-shadow:0 2px 4px rgba(43,38,34,.06),0 14px 40px rgba(43,38,34,.10)}
+.portret.imaslika .okvir::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);background:linear-gradient(180deg,transparent 66%,rgba(217,151,60,.09) 100%)}
+.okvir .napis{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);white-space:nowrap;font-size:.74rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tih);background:rgba(253,249,244,.92);border:1px dashed var(--linija);padding:7px 14px;border-radius:100px}
+.podpis{margin-top:14px;font-size:.86rem;color:var(--tih);text-align:center}
+@media(max-width:880px){
+  .hero .ovoj{grid-template-columns:1fr;gap:36px;padding-top:44px;padding-bottom:52px}
+  .portret{order:-1;max-width:330px;margin:0 auto}
+}
 
-  blockquote {
-    margin-top: 28px; padding: 24px; border-radius: var(--radius);
-    background: var(--accent-soft); font-family: Fraunces, Georgia, serif; font-size: 1.2rem; line-height: 1.45;
-  }
-  blockquote cite { display: block; margin-top: 12px; font-family: Inter, sans-serif; font-style: normal; font-size: .9rem; color: var(--muted); }
+/* trak obljub */
+.trak{background:var(--gozd);color:#EAF1ED}
+.trak .ovoj{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;padding-top:34px;padding-bottom:34px}
+.trak h3{font-size:1.06rem;color:#fff;margin-bottom:5px}
+.trak p{font-size:.94rem;color:rgba(234,241,237,.8);line-height:1.55}
+.trak .st{font-family:Bitter,serif;font-size:.8rem;font-weight:700;color:var(--med);letter-spacing:.1em;display:block;margin-bottom:8px}
+@media(max-width:760px){.trak .ovoj{grid-template-columns:1fr;gap:22px}}
 
-  .contact-list { list-style: none; margin-top: 24px; display: grid; gap: 10px; }
-  .contact-list a {
-    display: flex; align-items: center; gap: 14px; min-height: 60px; padding: 12px 18px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; text-decoration: none;
-    overflow-wrap: anywhere;
-  }
-  .contact-list .ic {
-    flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft);
-    color: var(--accent); display: grid; place-items: center;
-  }
-  .contact-list small { display: block; color: var(--muted); font-size: .8rem; }
+/* razdelki */
+section.blok{padding:88px 0}
+section.blok.svetlo{background:var(--papir2)}
+.glava{max-width:640px;margin-bottom:46px}
+.glava h2{font-size:clamp(1.75rem,3.5vw,2.5rem);margin:12px 0 14px}
+.glava p{color:var(--tih);font-size:1.06rem}
 
-  footer { padding: 32px 0 calc(32px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; text-align: center; }
+/* izjava */
+.izjava{max-width:760px;margin:0 auto;text-align:center}
+.izjava p{font-family:Bitter,serif;font-size:clamp(1.3rem,2.7vw,1.75rem);line-height:1.5;color:var(--crnilo);margin-bottom:26px}
+.izjava .kdo{font-size:.95rem;color:var(--tih)}
+.izjava .crta{width:54px;height:3px;border-radius:3px;background:var(--med);margin:0 auto 28px}
 
-  /* Označena mesta za vsebino (osnutek) */
-  .ph { background: color-mix(in srgb, var(--accent) 14%, transparent); border-radius: 4px; padding: 0 3px; }
+/* program */
+.mreza{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+.tocka{background:var(--papir);border:1px solid var(--linija);border-radius:16px;padding:28px 26px;box-shadow:var(--senca)}
+section.blok:not(.svetlo) .tocka{background:var(--papir2)}
+.tocka .ikona{width:44px;height:44px;border-radius:12px;background:var(--gozd-s);display:grid;place-items:center;margin-bottom:16px;color:var(--gozd)}
+.tocka h3{font-size:1.14rem;margin-bottom:8px}
+.tocka p{font-size:.97rem;color:var(--tih)}
 
-  /* Tablica in računalnik */
-  @media (min-width: 760px) {
-    :root { --pad: 32px; }
-    .menu-btn { display: none; }
-    nav.links {
-      display: flex !important; position: static; padding: 0; border: 0; background: none; gap: 28px;
-    }
-    nav.links a { padding: 0; border: 0; font-size: .95rem; }
-    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 72px var(--pad); }
-    .hero-img { margin: 0; order: 2; }
-    .btns { flex-direction: row; }
-    .cards { grid-template-columns: repeat(3, 1fr); }
-    .gallery { grid-template-columns: repeat(3, 1fr); }
-    .gallery div:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
-    .contact-list { grid-template-columns: repeat(3, 1fr); }
-  }
+/* o meni */
+.omeni{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start}
+.omeni p{margin-bottom:16px;color:var(--tih)}
+.omeni p strong{color:var(--crnilo)}
+.podatki{list-style:none;display:grid;gap:0;border:1px solid var(--linija);border-radius:16px;overflow:hidden;background:var(--papir)}
+.podatki li{display:flex;justify-content:space-between;gap:18px;padding:15px 20px;border-bottom:1px solid var(--linija);font-size:.97rem}
+.podatki li:last-child{border-bottom:0}
+.podatki b{font-weight:600}
+.podatki span{color:var(--tih);text-align:right}
+@media(max-width:880px){.omeni{grid-template-columns:1fr;gap:32px}}
+
+/* volitve */
+.volitve{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--linija);border:1px solid var(--linija);border-radius:16px;overflow:hidden}
+.volitve>div{background:var(--papir);padding:24px 22px}
+.volitve dt{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tih);margin-bottom:6px}
+.volitve dd{font-family:Bitter,serif;font-size:1.2rem;font-weight:600}
+.volitve dd small{display:block;font-family:'Source Sans 3',sans-serif;font-size:.88rem;font-weight:400;color:var(--tih);margin-top:4px}
+
+/* kontakt */
+.kontakt{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start}
+.obrazec{display:grid;gap:12px}
+.polje{width:100%;padding:13px 15px;border:1px solid var(--linija);border-radius:11px;background:var(--papir);font-family:inherit;font-size:1rem;color:var(--crnilo)}
+.polje:focus{outline:2px solid var(--med);outline-offset:1px}
+textarea.polje{min-height:130px;resize:vertical}
+.poslji{justify-self:start;padding:13px 28px;border:0;border-radius:100px;background:var(--gozd);color:#fff;font-family:inherit;font-weight:600;font-size:1rem;cursor:pointer}
+.stik{list-style:none;display:grid;gap:14px;margin-top:24px}
+.stik li{border-bottom:1px solid var(--linija);padding-bottom:13px}
+.stik b{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tih);font-weight:700;margin-bottom:3px}
+@media(max-width:880px){.kontakt{grid-template-columns:1fr;gap:34px}}
+
+/* noga */
+.noga{background:var(--crnilo);color:#D8D0C8;padding:44px 0 34px;font-size:.92rem}
+.noga .ovoj{display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.noga a{color:var(--med)}
+.noga .drobno{font-size:.82rem;color:#9C948C;max-width:52ch;line-height:1.6}
+
+/* mobilni meni */
+.mobmeni{display:none}
+
+/* telefon */
+@media(max-width:880px){
+  .portret{width:100%}
+  .mobmeni{display:flex;gap:6px;overflow-x:auto;padding:0 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .mobmeni::-webkit-scrollbar{display:none}
+  .mobmeni a{flex:none;padding:7px 14px;border-radius:100px;border:1px solid var(--linija);background:var(--papir);font-size:.9rem;font-weight:500;text-decoration:none;color:var(--tih)}
+  section[id]{scroll-margin-top:110px}
+}
+@media(max-width:600px){
+  body{font-size:16px}
+  .ovoj{padding:0 18px}
+  .nav .ovoj{padding-top:10px;padding-bottom:10px}
+  .gumb{padding:10px 18px}
+  .hero .ovoj{padding-top:28px;padding-bottom:44px;gap:28px}
+  .portret{max-width:280px}
+  .vodilo{font-size:1.05rem}
+  .dejanja{flex-direction:column}
+  .dejanja .gumb{text-align:center;padding:14px 22px}
+  .trak .ovoj{padding-top:28px;padding-bottom:28px}
+  section.blok{padding:56px 0}
+  .glava{margin-bottom:28px}
+  .mreza{grid-template-columns:1fr;gap:14px}
+  .tocka{padding:22px 20px}
+  .izjava p{font-size:1.2rem}
+  .podatki li{padding:13px 16px}
+  .volitve{grid-template-columns:1fr 1fr}
+  .volitve>div{padding:18px 16px}
+  .volitve dd{font-size:1.05rem}
+  .poslji{justify-self:stretch;padding:15px 28px}
+  .noga{padding:36px 0 calc(28px + env(safe-area-inset-bottom))}
+}
+@media(max-width:380px){.volitve{grid-template-columns:1fr}}
+
+.pokazi{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.pokazi.vidno{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.pokazi{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
-<header id="top">
-  <div class="wrap nav">
-    <a class="logo" href="#top">Urška Tavčar</a>
-    <button class="menu-btn" aria-label="Meni" aria-expanded="false" onclick="toggleMenu(this)"><span></span></button>
-    <nav class="links" onclick="closeMenu()">
-      <a href="#o-meni">O meni</a>
-      <a href="#storitve">Storitve</a>
-      <a href="#galerija">Galerija</a>
-      <a href="#kontakt">Kontakt</a>
-    </nav>
-  </div>
-</header>
 
-<main>
-  <div class="wrap hero">
-    <div class="hero-img">
-      <!-- Zamenjaj z: <img src="slika.jpg" alt="Urška Tavčar"> -->
-      [Glavna fotografija]
-    </div>
-    <div>
-      <p class="eyebrow"><span class="ph">[Dejavnost]</span></p>
-      <h1>Urška Tavčar</h1>
-      <p class="lead"><span class="ph">[En do dva stavka o tem, kaj ponujate in komu.]</span></p>
-      <div class="btns">
-        <a class="btn primary" href="#kontakt">Stopite v stik</a>
-        <a class="btn ghost" href="#storitve">Poglejte storitve</a>
-      </div>
-    </div>
-  </div>
+<div class="osnutek">
+<b>Osnutek predstavitvene strani.</b> Besedilo in fotografija sta začasna in nista izjava kandidatke. Pripravil <a href="https://www.pikselatelje.si" style="color:#fff">PIKSEL ATELJE</a>.
+</div>
 
-  <section class="block" id="o-meni">
-    <div class="wrap">
-      <p class="eyebrow">O meni</p>
-      <h2>Kdo sem</h2>
-      <p><span class="ph">[Kratka predstavitev: izkušnje, pristop, zakaj stranke izberejo vas. Priporočeno 3–5 stavkov.]</span></p>
-    </div>
-  </section>
+<nav class="nav"><div class="ovoj">
+<a class="ime" href="#"><span class="znak">UT</span> Urška Tavčar</a>
+<div class="povezave">
+<a href="#program">Program</a>
+<a href="#omeni">O meni</a>
+<a href="#volitve">Volitve</a>
+<a class="gumb" href="#kontakt">Pišite mi</a>
+</div>
+</div>
+<div class="mobmeni">
+<a href="#program">Program</a>
+<a href="#omeni">O meni</a>
+<a href="#volitve">Volitve</a>
+<a href="#kontakt">Kontakt</a>
+</div></nav>
 
-  <section class="block" id="storitve">
-    <div class="wrap">
-      <p class="eyebrow">Storitve</p>
-      <h2>Kaj ponujam</h2>
-      <p><span class="ph">[Uvodni stavek o storitvah.]</span></p>
-      <div class="cards">
-        <div class="card"><p class="num">01</p><h3><span class="ph">[Storitev 1]</span></h3><p><span class="ph">[Kratek opis storitve.]</span></p></div>
-        <div class="card"><p class="num">02</p><h3><span class="ph">[Storitev 2]</span></h3><p><span class="ph">[Kratek opis storitve.]</span></p></div>
-        <div class="card"><p class="num">03</p><h3><span class="ph">[Storitev 3]</span></h3><p><span class="ph">[Kratek opis storitve.]</span></p></div>
-      </div>
-    </div>
-  </section>
+<header class="hero"><div class="ovoj">
+<div>
+<span class="oznaka">Kandidatka za županjo občine Mengeš</span>
+<h1>Občina, ki <em>posluša</em> in potem naredi.</h1>
+<p class="vodilo">Mengeš je dovolj majhen, da se poznamo, in dovolj velik, da lahko naredimo velike stvari. Za to ni treba obljubljati vsega — treba je izbrati pravo in to dokončati.</p>
+<div class="dejanja">
+<a class="gumb" href="#program">Preberite program</a>
+<a class="gumb gumb-o" href="#kontakt">Povejte, kaj vas moti</a>
+</div>
+</div>
+<div class="portret" id="portret">
+<div class="okvir">
+<picture>
+<source type="image/webp" srcset="slika/urska-tavcar-600.webp 600w, slika/urska-tavcar.webp 1200w" sizes="(max-width:880px) 90vw, 460px"/>
+<img src="slika/urska-tavcar.jpg" srcset="slika/urska-tavcar-600.jpg 600w, slika/urska-tavcar.jpg 1200w" sizes="(max-width:880px) 90vw, 460px" width="1600" height="1740" alt="Urška Tavčar, kandidatka za županjo občine Mengeš" onload="document.getElementById('portret').classList.add('imaslika')"/>
+</picture>
+<svg viewBox="0 0 400 500" aria-label="Mesto za fotografijo kandidatke" role="img">
+<defs>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#EFE4D6"/><stop offset="1" stop-color="#E4D6C4"/>
+</linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#D9973C" stop-opacity=".55"/><stop offset="1" stop-color="#2E5D4E" stop-opacity=".45"/>
+</linearGradient>
+</defs>
+<rect width="400" height="500" fill="url(#g1)"/>
+<circle cx="200" cy="196" r="112" fill="#fff" opacity=".38"/>
+<g fill="url(#g2)">
+<circle cx="200" cy="186" r="62"/>
+<path d="M200 262c-64 0-116 44-124 102-1 8 5 15 13 15h222c8 0 14-7 13-15-8-58-60-102-124-102z"/>
+</g>
+<g opacity=".22" fill="#2B2622">
+<circle cx="64" cy="440" r="3"/><circle cx="96" cy="440" r="3"/><circle cx="128" cy="440" r="3"/>
+<circle cx="272" cy="440" r="3"/><circle cx="304" cy="440" r="3"/><circle cx="336" cy="440" r="3"/>
+</g>
+</svg>
+<span class="napis">Tu pride fotografija</span>
+</div>
+<p class="podpis">Priporočen portret: pokončen, 1200 × 1500 slikovnih pik, dnevna svetloba.</p>
+</div>
+</div></header>
 
-  <section class="block" id="galerija">
-    <div class="wrap">
-      <p class="eyebrow">Galerija</p>
-      <h2>Iz mojega dela</h2>
-      <div class="gallery">
-        <div>[Slika 1]</div><div>[Slika 2]</div><div>[Slika 3]</div>
-        <div>[Slika 4]</div><div>[Slika 5]</div>
-      </div>
-      <blockquote>
-        <span class="ph">[Mnenje zadovoljne stranke.]</span>
-        <cite><span class="ph">[Ime stranke]</span></cite>
-      </blockquote>
-    </div>
-  </section>
+<div class="trak"><div class="ovoj">
+<div><span class="st">01</span><h3>Najprej poslušam</h3><p>Redne ure za občane vsak teden, brez naročanja in brez posrednikov.</p></div>
+<div><span class="st">02</span><h3>Potem pokažem številke</h3><p>Vsak večji projekt z objavljeno ceno, rokom in odgovorno osebo.</p></div>
+<div><span class="st">03</span><h3>In dokončam</h3><p>Raje tri stvari do konca kot deset napol. Zaključeno se vidi, začeto ne.</p></div>
+</div></div>
 
-  <section class="block" id="kontakt">
-    <div class="wrap">
-      <p class="eyebrow">Kontakt</p>
-      <h2>Stopite v stik</h2>
-      <p>Z veseljem odgovorim na vaša vprašanja.</p>
-      <ul class="contact-list">
-        <li><a href="tel:+386000000000"><span class="ic">☎</span><span><small>Telefon</small><span class="ph">[+386 00 000 000]</span></span></a></li>
-        <li><a href="mailto:info@example.com"><span class="ic">✉</span><span><small>E-pošta</small><span class="ph">[info@domena.si]</span></span></a></li>
-        <li><a href="#"><span class="ic">⌖</span><span><small>Naslov</small><span class="ph">[Ulica, kraj]</span></span></a></li>
-      </ul>
-    </div>
-  </section>
-</main>
+<section class="blok"><div class="ovoj">
+<div class="izjava pokazi">
+<div class="crta"></div>
+<p>»Ko sem pred leti prvič prišla na sejo občinskega sveta, sem mislila, da bom razumela vsaj polovico. Nisem razumela skoraj nič. To ni bila moja krivda in ni bila nujno njihova — tako pač je bilo napisano. Odtlej mi je jasno, kaj hočem spremeniti najprej: da občan brez pravnika razume, kaj se dogaja z njegovim denarjem.«</p>
+<p class="kdo">Urška Tavčar</p>
+</div>
+</div></section>
 
-<footer>
-  <div class="wrap">© <span id="y">2026</span> Urška Tavčar · Izdelava: Piksel atelje</div>
-</footer>
+<section class="blok svetlo" id="program"><div class="ovoj">
+<div class="glava">
+<span class="oznaka">Program</span>
+<h2>Šest stvari, ki jih lahko naredimo v štirih letih</h2>
+<p>Nič od tega ni nemogoče in nič od tega ni zastonj. Pri vsaki točki bo pred volitvami objavljena ocena stroška.</p>
+</div>
+<div class="mreza pokazi">
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></div>
+<h3>Vrtec in šola</h3>
+<p>Dovolj mest v vrtcu brez čakalne vrste in varne poti do šole — pločnik in osvetlitev tam, kjer ju danes ni.</p>
+</article>
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6M6 17 10 7h4l4 10"/></svg></div>
+<h3>Promet in varnost</h3>
+<p>Umirjanje prometa skozi naselja, povezane kolesarske poti in parkirišča tam, kjer ljudje res parkirajo.</p>
+</article>
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 0 0-7.1 7.1l8.8 8.8 8.8-8.8a5 5 0 0 0 0-7.1z"/></svg></div>
+<h3>Skrb za starejše</h3>
+<p>Več ur pomoči na domu, prevoz do zdravnika in prostor, kjer se je mogoče dobiti tudi pozimi.</p>
+</article>
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"/></svg></div>
+<h3>Šport in društva</h3>
+<p>Urejena igrišča, dostopna dvorana in razdelitev sredstev društvom po znanem, objavljenem ključu.</p>
+</article>
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c4-4 7-7.4 7-11a7 7 0 1 0-14 0c0 3.6 3 7 7 11z"/><path d="M12 14c0-3 1.5-5 4-6M12 14c0-2.5-1.2-4.2-3.5-5"/></svg></div>
+<h3>Okolje in zelene površine</h3>
+<p>Drevesa tam, kjer je poleti prevroče, urejene sprehajalne poti in odvoz odpadkov, ki deluje tudi ob praznikih.</p>
+</article>
+
+<article class="tocka">
+<div class="ikona"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div>
+<h3>Odprta občina</h3>
+<p>Proračun, razumljiv brez pravnika. Vsak zapisnik na spletu v treh dneh. Odgovor na vprašanje občana v enem tednu.</p>
+</article>
+
+</div>
+</div></section>
+
+<section class="blok" id="omeni"><div class="ovoj">
+<div class="omeni">
+<div>
+<span class="oznaka">O meni</span>
+<h2 style="font-size:clamp(1.75rem,3.5vw,2.5rem);margin:12px 0 20px">Doma sem tu in tu nameravam ostati.</h2>
+<p><strong>Rodila sem se v Mengšu</strong> in se po študiju vrnila nazaj, ker sem hotela otroke vzgajati tam, kjer sosed pozna soseda. Ta odločitev je bila premišljena in je nisem obžalovala.</p>
+<p>Zadnjih dvanajst let vodim manjše ekipe — najprej v podjetju, zadnja leta tudi v društvu. Iz tega sem se naučila dvoje: <strong>da je vsak projekt najprej pogovor</strong>, in da obljuba brez roka ni obljuba, ampak želja.</p>
+<p>Kandidiram, ker mislim, da lahko občina dela bolj razumljivo, bolj predvidljivo in bolj odzivno. Ne obljubljam, da bom vse rešila. Obljubljam, da boste ob vsakem vprašanju dobili odgovor — tudi kadar bo ta »ne, ker«.</p>
+</div>
+<ul class="podatki">
+<li><b>Kraj</b><span>Mengeš</span></li>
+<li><b>Izobrazba</b><span>univerzitetna diploma</span></li>
+<li><b>Poklicne izkušnje</b><span>12 let vodenja ekip</span></li>
+<li><b>Delo v skupnosti</b><span>društvo, prostovoljstvo</span></li>
+<li><b>Družina</b><span>poročena, dva otroka</span></li>
+</ul>
+</div>
+</div></section>
+
+<section class="blok svetlo" id="volitve"><div class="ovoj">
+<div class="glava">
+<span class="oznaka">Volitve</span>
+<h2>Kdaj in kje se voli</h2>
+<p>Podatki bodo dopolnjeni, ko jih objavi občinska volilna komisija.</p>
+</div>
+<dl class="volitve pokazi">
+<div><dt>Dan glasovanja</dt><dd>—<small>datum bo objavljen</small></dd></div>
+<div><dt>Predčasno glasovanje</dt><dd>—<small>kraj in ure bodo objavljeni</small></dd></div>
+<div><dt>Volišče</dt><dd>—<small>po naslovu stalnega bivališča</small></dd></div>
+<div><dt>S seboj</dt><dd>Osebni dokument<small>s fotografijo</small></dd></div>
+</dl>
+</div></section>
+
+<section class="blok" id="kontakt"><div class="ovoj">
+<div class="kontakt">
+<div>
+<span class="oznaka">Pišite mi</span>
+<h2 style="font-size:clamp(1.75rem,3.5vw,2.5rem);margin:12px 0 16px">Kaj bi vi popravili najprej?</h2>
+<p class="tih">Vsako sporočilo preberem sama. Če je vprašanje, dobite odgovor — tudi če odgovor ne bo tak, kot bi si želeli.</p>
+<ul class="stik">
+<li><b>E-pošta</b>urska.tavcar@primer.si</li>
+<li><b>Telefon</b>0X XXX XX XX</li>
+<li><b>Srečanja z občani</b>vsako sredo popoldne, kraj bo objavljen</li>
+</ul>
+</div>
+<form class="obrazec" onsubmit="event.preventDefault();this.querySelector('.poslji').textContent='Hvala! (osnutek obrazca)'">
+<input class="polje" placeholder="Ime in priimek" required/>
+<input class="polje" type="email" placeholder="E-pošta" required/>
+<textarea class="polje" placeholder="Kaj bi popravili najprej?"></textarea>
+<button class="poslji" type="submit">Pošlji sporočilo</button>
+</form>
+</div>
+</div></section>
+
+<footer class="noga"><div class="ovoj">
+<div>
+<div style="font-family:Bitter,serif;font-weight:700;font-size:1.05rem;color:#fff;margin-bottom:8px">Urška Tavčar</div>
+<div>Kandidatka za županjo občine Mengeš</div>
+</div>
+<div class="drobno">
+<b style="color:#D8D0C8">Opomba:</b> to je <b style="color:#fff">osnutek</b> predstavitvene strani. Besedilo in fotografija sta začasna, sestavljena za prikaz postavitve, in nista izjava ali program kandidatke. Izdelava: <a href="https://www.pikselatelje.si">PIKSEL ATELJE</a>.
+</div>
+</div></footer>
 
 <script>
-  function toggleMenu(btn) {
-    var open = document.body.classList.toggle('nav-open');
-    btn.setAttribute('aria-expanded', open);
-  }
-  function closeMenu() {
-    document.body.classList.remove('nav-open');
-    document.querySelector('.menu-btn').setAttribute('aria-expanded', 'false');
-  }
-  document.getElementById('y').textContent = new Date().getFullYear();
+(function(){"use strict";
+var e=document.querySelectorAll(".pokazi");
+if("IntersectionObserver" in window){
+var o=new IntersectionObserver(function(v){v.forEach(function(x){if(x.isIntersecting){x.target.classList.add("vidno");o.unobserve(x.target);}});},{threshold:.12});
+e.forEach(function(x){o.observe(x);});
+}else{e.forEach(function(x){x.classList.add("vidno");});}
+})();
 </script>
 </body>
 </html>
